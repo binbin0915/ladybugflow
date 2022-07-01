@@ -40,51 +40,51 @@ public class MyFlow1 extends FlowRunner {
 MyFlow1.json
 ```
 {
-    "flowId" :    "123" ,
-    "nodes" : [
-        {
-            "id" :    "1" ,
-            "label" :    "start"
-        },
-        {
-            "id" :    "2" ,
-            "label" :    "a"
-        },
-        {
-            "id" :    "0b5ba9df-b6c7-4752-94e2-debb6104015c" ,
-            "label" :    "b"
-        },
-        {
-            "id" :    "29bc32c7-acd8-4893-9410-e9895da38b2e" ,
-            "label" :    "c"
-        }
-    ],
-    "edges" : [
-        {
-            "id" :    "1" ,
-            "from" :    "1" ,
-            "to" :    "2" ,
-            "arrows" :    "to"
-        },
-        {
-            "id" :    "078ffa82-5eff-4d33-974b-53890f2c9a18" ,
-            "from" :    "1" ,
-            "to" :    "0b5ba9df-b6c7-4752-94e2-debb6104015c" ,
-            "arrows" :    "to"
-        },
-        {
-            "id" :    "90663193-7077-4aca-9011-55bc8745403f" ,
-            "from" :    "2" ,
-            "to" :    "29bc32c7-acd8-4893-9410-e9895da38b2e" ,
-            "arrows" :    "to"
-        },
-        {
-            "id" :    "a6882e25-c07a-4abd-907e-e269d4eda0ec" ,
-            "from" :    "0b5ba9df-b6c7-4752-94e2-debb6104015c" ,
-            "to" :    "29bc32c7-acd8-4893-9410-e9895da38b2e" ,
-            "arrows" :    "to"
-        }
-    ]
+	"flowId": "123",
+	"nodes": [
+		{
+			"id": "1",
+			"label": "a"
+		},
+		{
+			"id": "2",
+			"label": "b"
+		},
+		{
+			"id": "0b5ba9df-b6c7-4752-94e2-debb6104015c",
+			"label": "c"
+		},
+		{
+			"id": "29bc32c7-acd8-4893-9410-e9895da38b2e",
+			"label": "d"
+		}
+	],
+	"edges": [
+		{
+			"id": "1",
+			"from": "1",
+			"to": "2",
+			"arrows": "to"
+		},
+		{
+			"id": "078ffa82-5eff-4d33-974b-53890f2c9a18",
+			"from": "1",
+			"to": "0b5ba9df-b6c7-4752-94e2-debb6104015c",
+			"arrows": "to"
+		},
+		{
+			"id": "90663193-7077-4aca-9011-55bc8745403f",
+			"from": "2",
+			"to": "29bc32c7-acd8-4893-9410-e9895da38b2e",
+			"arrows": "to"
+		},
+		{
+			"id": "a6882e25-c07a-4abd-907e-e269d4eda0ec",
+			"from": "0b5ba9df-b6c7-4752-94e2-debb6104015c",
+			"to": "29bc32c7-acd8-4893-9410-e9895da38b2e",
+			"arrows": "to"
+		}
+	]
 }
 ```
 #### Start
