@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>nobuglady-network</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <style type="text/css">
+        #mynetwork {
+            width: 600px;
+            height: 387px;
+            border: 1px solid lightgray;
+        }
+    </style>
+</head>
+<body>
+
+<table>
+	<tr>
+		<td valign="top">
+			<div>
+				<textarea id="jsonTxt" rows="30" cols="50">
+{
+	"flowId":"123",
+	"nodes":[
+		{
+			"id":"1",
+			"label":"start"
+		},
+		{
+			"id":"2",
+			"label":"exec1"
+		}
+
+	],
+	"edges":[
+		{
+			"id":"1",
+			"from":"1",
+			"to":"2",
+			"arrows":"to"
+		}
+	]
+}
+				</textarea>
+				<br/>
+				<input type="button" value="show network" onClick="showNetwork()"/>
+			</div>
+		</td>
+		<td valign="top">
+			<div id="mynetwork"></div>
+			<input type="button" value="update json" onClick="updateJson()"/>
+		</td>
+		<td valign="top">
+			<div id="node-div" style="display:none">
+	          <table>
+	            <tr>
+	              <td></td>
+	              <td><label for="node-id">Id</label></td>
+	              <td><input id="node-id" type="text" value="6" disabled/></td>
+	            </tr>
+	            <tr>
+	              <td></td>
+	              <td><label for="node-label">Label</label></td>
+	              <td><input id="node-label" type="text" value="Node 6" /></td>
+	            </tr>
+	            <tr>
+	              <td></td>
+	              <td>Action</td>
+	              <td>
+	                <button id="node-update" onclick="updateNode();">Update</button>
+	                <button id="node-remove" onclick="removeNode();">Remove</button>
+	              </td>
+	            </tr>
+	          </table>
+          	</div>
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+	var nodes;
+	var edges;
+
+	function updateJson(){
+		
+		var jsonObj = {
+				flowId:"your flow id"
+		};
+		
+		if(document.getElementById("jsonTxt").value != ""){
+			jsonObj = JSON.parse(document.getElementById("jsonTxt").value);
+		}
+		
+		jsonObj.nodes = [];
+		jsonObj.edges = [];
+		
+		nodes.forEach(element => jsonObj.nodes.push(
+				{
+					"id":element.id,
+					"label":element.label
+				}
+		));
+		
+		edges.forEach(element => jsonObj.edges.push(
+				{
+					"id":element.id,
+					"from":element.from,
+					"to":element.to,
+					"arrows":element.arrows
+				}
+		));
+		
+		document.getElementById("jsonTxt").value = JSON.stringify(jsonObj, null, "\t");
+	}
+
+	function updateNode() {
+	    try {
+	      nodes.update({
+	        id: document.getElementById("node-id").value,
+	        label: document.getElementById("node-label").value,
+	      });
+	    } catch (err) {
+	      alert(err);
+	    }
+	}
+	
+	function removeNode() {
+	    try {
+	      nodes.remove({ id: document.getElementById("node-id").value });
+	    } catch (err) {
+	      alert(err);
+	    }
+	}
+	  
+	function showNetwork(){
+		var jsonObj = JSON.parse(document.getElementById("jsonTxt").value);
+	    // create an array with nodes
+	    nodes = new vis.DataSet(jsonObj.nodes);
+
+	    // create an array with edges
+	    edges = new vis.DataSet(jsonObj.edges);
+
+	    // create a network
+	    var container = document.getElementById('mynetwork');
+
+	    // provide the data in the vis format
+	    var data = {
+	        nodes: nodes,
+	        edges: edges
+	    };
+	    var options = {
+    		layout: { randomSeed: 1 },
+
+            interaction: { hover: true },
+            manipulation: {
+              enabled: true,
+              addEdge: function (data, callback) {
+   			  	 data.arrows = "to";
+                 callback(data);
+               },
+            }
+	    };
+
+	    // initialize your network!
+	    var network = new vis.Network(container, data, options);
+	    
+	    network.on("click", function (params) {
+			var nodeName = this.getNodeAt(params.pointer.DOM);
+			if(nodeName){
+				
+				var node = nodes.get(params.nodes[0]);
+				
+				document.getElementById("node-id").value = node.id;
+				document.getElementById("node-label").value = node.label;
+				
+				document.getElementById("node-div").style.display = ""
+			}else{
+				document.getElementById("node-div").style.display = "none"
+			}
+	    });
+	}
+	
+	showNetwork();
+</script>
+</body>
+</html>
