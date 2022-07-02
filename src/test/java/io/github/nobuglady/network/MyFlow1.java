@@ -13,7 +13,7 @@ public class MyFlow1 extends FlowRunner {
 	@Node(label="b")
 	public void process_b() {
 		System.out.println("processing b");
-		throw new RuntimeException("test");
+//		throw new RuntimeException("test");
 	}
 	
 	@Node(label="c")
