@@ -71,7 +71,7 @@ public class FlowManager {
 				List<HistoryNodeEntity> errorNodeList = getErrorNode(flowId, historyId);
 
 				if ((runningNodeList.size() == 0 && openingNodeList.size() == 0 && waitingNodeList.size() == 0)
-					|| errorNodeList.size() > 0
+					|| (errorNodeList.size() > 0 && runningNodeList.size() == 0 )
 					) {
 					
 					if (errorNodeList.size() > 0) {
