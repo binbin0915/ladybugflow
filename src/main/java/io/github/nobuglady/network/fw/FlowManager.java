@@ -67,9 +67,10 @@ public class FlowManager {
 
 				List<HistoryNodeEntity> runningNodeList = getRunningNode(flowId, historyId);
 				List<HistoryNodeEntity> openingNodeList = getOpenningNode(flowId, historyId);
+				List<HistoryNodeEntity> waitingNodeList = getWaitingNode(flowId, historyId);
 				List<HistoryNodeEntity> errorNodeList = getErrorNode(flowId, historyId);
 
-				if (runningNodeList.size() == 0 && openingNodeList.size() == 0) {
+				if (runningNodeList.size() == 0 && openingNodeList.size() == 0 && waitingNodeList.size() == 0) {
 					
 					if (errorNodeList.size() > 0) {
 						System.out.println("Complete error.");
@@ -292,6 +293,20 @@ public class FlowManager {
 	 */
 	private static List<HistoryNodeEntity> getOpenningNode(String flowId, String historyId) {
 		List<HistoryNodeEntity> result = FlowContainer.selectNodeListByStatus(flowId, historyId, NodeStatus.OPENNING);
+		if (result == null) {
+			return new ArrayList<>();
+		}
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param flowId
+	 * @param historyId
+	 * @return
+	 */
+	private static List<HistoryNodeEntity> getWaitingNode(String flowId, String historyId) {
+		List<HistoryNodeEntity> result = FlowContainer.selectNodeListByStatus(flowId, historyId, NodeStatus.WAIT);
 		if (result == null) {
 			return new ArrayList<>();
 		}
