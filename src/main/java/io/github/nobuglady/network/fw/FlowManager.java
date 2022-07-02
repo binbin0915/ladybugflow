@@ -70,7 +70,9 @@ public class FlowManager {
 				List<HistoryNodeEntity> waitingNodeList = getWaitingNode(flowId, historyId);
 				List<HistoryNodeEntity> errorNodeList = getErrorNode(flowId, historyId);
 
-				if (runningNodeList.size() == 0 && openingNodeList.size() == 0 && waitingNodeList.size() == 0) {
+				if ((runningNodeList.size() == 0 && openingNodeList.size() == 0 && waitingNodeList.size() == 0)
+					|| errorNodeList.size() > 0
+					) {
 					
 					if (errorNodeList.size() > 0) {
 						System.out.println("Complete error.");
