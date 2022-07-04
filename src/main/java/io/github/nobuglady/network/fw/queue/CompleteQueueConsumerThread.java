@@ -37,6 +37,7 @@ public class CompleteQueueConsumerThread extends Thread {
 			} catch (InterruptedException e) {
 				if (!this.stopFlag) {
 					e.printStackTrace();
+					break;
 				} else {
 					break;
 				}

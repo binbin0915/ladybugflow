@@ -13,8 +13,8 @@
 package io.github.nobuglady.network.fw.logger;
 
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * ConsoleLogger
@@ -24,17 +24,33 @@ import java.util.Map;
  */
 public class ConsoleLogger {
 
-	public static boolean enabled = false;
-
-	private static Map<String, ConsoleLogger> instanceMap = new HashMap<>();
+	public static volatile boolean debug_on = false;
 
 	private PrintStream pw = System.out;
+
+	private String key;
+
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 
 	/**
 	 * constructor
 	 */
 	private ConsoleLogger(String flowId, String historyId) {
+		this.key = "[" + flowId + "][" + historyId + "]";
+	}
 
+	/**
+	 * constructor
+	 */
+	private ConsoleLogger(String flowId) {
+		this.key = "[" + flowId + "]";
+	}
+
+	/**
+	 * constructor
+	 */
+	private ConsoleLogger() {
+		this.key = "";
 	}
 
 	/**
@@ -43,14 +59,35 @@ public class ConsoleLogger {
 	 * @param historyId
 	 * @return
 	 */
-	public static synchronized ConsoleLogger getInstance(String flowId, String historyId) {
-		String instanceId = flowId + "," + historyId;
-		ConsoleLogger instance = instanceMap.get(instanceId);
-		if (instance == null) {
-			instance = new ConsoleLogger(flowId, historyId);
-			instanceMap.put(instanceId, instance);
+	public static ConsoleLogger getInstance(String flowId, String historyId) {
+		return new ConsoleLogger(flowId, historyId);
+	}
+
+	/**
+	 * 
+	 * @param flowId
+	 * @return
+	 */
+	public static ConsoleLogger getInstance(String flowId) {
+		return new ConsoleLogger(flowId);
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public static ConsoleLogger getInstance() {
+		return new ConsoleLogger();
+	}
+
+	/**
+	 * 
+	 * @param message
+	 */
+	public void debug(String message) {
+		if (debug_on) {
+			pw.println("[D]" + getHeader() + message);
 		}
-		return instance;
 	}
 
 	/**
@@ -58,9 +95,7 @@ public class ConsoleLogger {
 	 * @param message
 	 */
 	public void info(String message) {
-		if (enabled) {
-			pw.println(Thread.currentThread().getName() + ":" + message);
-		}
+		pw.println("[I]" + getHeader() + message);
 	}
 
 	/**
@@ -69,10 +104,24 @@ public class ConsoleLogger {
 	 * @param e
 	 */
 	public void error(String message, Throwable e) {
-		if (enabled) {
-			pw.println(Thread.currentThread().getName() + ":" + message);
-			pw.println(Thread.currentThread().getName() + ":" + e.getMessage());
-		}
+		pw.println("[E]" + getHeader() + message);
+		pw.println("[E]" + getHeader() + e.getMessage());
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private String getHeader() {
+		return getTime() + " " + key + " " + Thread.currentThread().getName() + ":";
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private String getTime() {
+		return sdf.format(new Date());
 	}
 
 }

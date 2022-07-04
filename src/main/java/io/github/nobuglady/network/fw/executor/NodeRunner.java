@@ -12,8 +12,6 @@
  */
 package io.github.nobuglady.network.fw.executor;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.CancellationException;
 
 import io.github.nobuglady.network.fw.FlowRunner;
@@ -63,11 +61,10 @@ public class NodeRunner implements Runnable {
 
 		// start log
 		ConsoleLogger consoleLogger = ConsoleLogger.getInstance(flowId, historyId);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 
-		consoleLogger.info("-------------------------------------------------------------------");
-		consoleLogger.info("[FLOW]" + flowId + ",[HISTORY]" + historyId + ",[NODE]" + nodeId + "");
-		consoleLogger.info("-------------------------------------------------------------------");
+		consoleLogger.debug("-------------------------------------------------------------------");
+		consoleLogger.debug("[FLOW]" + flowId + ",[HISTORY]" + historyId + ",[NODE]" + nodeId + "");
+		consoleLogger.debug("-------------------------------------------------------------------");
 
 		try {
 
@@ -80,7 +77,7 @@ public class NodeRunner implements Runnable {
 
 			// check ready
 			if (NodeStatus.READY != historyNodeEntity.getNodeStatus()) {
-				consoleLogger.info(sdf.format(new Date()) + " [NOT READY]" + historyNodeEntity.getNodeStatus());
+				consoleLogger.debug(" [NOT READY]" + historyNodeEntity.getNodeStatus());
 				return;
 			}
 
@@ -89,13 +86,12 @@ public class NodeRunner implements Runnable {
 
 			// run
 			FlowRunner flowRunner = FlowContainer.flowRunnerMap.get(flowId + "," + historyId);
-			consoleLogger.info(sdf.format(new Date()) + " [NODE RUNNING]" + historyNodeEntity.getNodeName());
+			consoleLogger.debug(" [NODE RUNNING]" + historyNodeEntity.getNodeName());
 			int returnValue = flowRunner.execute(historyNodeEntity.getFlowId(), historyNodeEntity.getNodeId(),
 					historyNodeEntity.getHistoryId(), historyNodeEntity);
 
 			// complete
-			consoleLogger.info(
-					sdf.format(new Date()) + " [NODE COMPLETE][" + returnValue + "]" + historyNodeEntity.getNodeName());
+			consoleLogger.debug(" [NODE COMPLETE][" + returnValue + "]" + historyNodeEntity.getNodeName());
 			FlowContainer.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE,
 					NodeStatusDetail.COMPLETE_SUCCESS);
 
@@ -103,7 +99,7 @@ public class NodeRunner implements Runnable {
 
 		} catch (CancellationException e) {
 
-			consoleLogger.error(sdf.format(new Date()) + " [NODE CANCEL]" + nodeName, e);
+			consoleLogger.error(" [NODE CANCEL]" + nodeName, e);
 			FlowContainer.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE,
 					NodeStatusDetail.COMPLETE_CANCEL);
 			CompleteQueueManager.getInstance().putCompleteNode(flowId, historyId, nodeId);
@@ -112,7 +108,7 @@ public class NodeRunner implements Runnable {
 
 			e.printStackTrace();
 
-			consoleLogger.error(sdf.format(new Date()) + " [NODE ERROR]" + nodeName, e);
+			consoleLogger.error(" [NODE ERROR]" + nodeName, e);
 			FlowContainer.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE,
 					NodeStatusDetail.COMPLETE_ERROR);
 			CompleteQueueManager.getInstance().putCompleteNode(flowId, historyId, nodeId);

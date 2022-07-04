@@ -89,7 +89,6 @@ public class FlowMarker {
 				for (HistoryEdgeEntity flowEdgeBack : edgeBackList) {
 					HistoryNodeEntity nodeFrom = nodeMap.get(flowEdgeBack.getFromNodeId());
 
-					System.out.println("detail:" + nodeFrom.getNodeStatusDetail());
 					if (NodeStatusDetail.NONE == nodeFrom.getNodeStatusDetail()) {
 
 						needWait = true;

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.nobuglady.network.fw.constant.FlowStatus;
 import io.github.nobuglady.network.fw.constant.NodeStatus;
 import io.github.nobuglady.network.fw.constant.NodeStatusDetail;
+import io.github.nobuglady.network.fw.logger.ConsoleLogger;
 import io.github.nobuglady.network.fw.marker.FlowMarker;
 import io.github.nobuglady.network.fw.model.EdgeDto;
 import io.github.nobuglady.network.fw.model.FlowDto;
@@ -54,6 +55,8 @@ public class FlowManager {
 		String flowId = nodeResult.getFlowId();
 		String historyId = nodeResult.getHistoryId();
 
+		ConsoleLogger logger = ConsoleLogger.getInstance(flowId, historyId);
+
 		try {
 			boolean markResult = FlowMarker.onNodeComplete(nodeResult);
 
@@ -77,14 +80,14 @@ public class FlowManager {
 				if (runningNodeList.size() == 0 && openingNodeList.size() == 0 && waitingNodeList.size() == 0) {
 
 					if (errorNodeList.size() > 0) {
-						System.out.println("Complete error.");
+						logger.info("Complete error.");
 						updateFlowStatus(flowId, historyId, true);
 					} else {
-						System.out.println("Complete success.");
+						logger.info("Complete success.");
 						updateFlowStatus(flowId, historyId, false);
 					}
 
-					System.out.println("json:\n" + FlowUtil.dumpJson(flowId, historyId));
+					logger.info("json:\n" + FlowUtil.dumpJson(flowId, historyId));
 					FlowContainer.flowMap.remove(flowId + "," + historyId);
 				}
 			}
@@ -156,6 +159,8 @@ public class FlowManager {
 			flowEntity.setFlowId(flowDto.flowId);
 			flowEntity.setHistoryId(historyId);
 
+			ConsoleLogger logger = ConsoleLogger.getInstance(flowDto.flowId, historyId);
+
 			flowEntityDB.flowEntity = flowEntity;
 
 			if (flowDto.nodes != null) {
@@ -183,7 +188,7 @@ public class FlowManager {
 			}
 
 			String json = mapper.writeValueAsString(flowDto);
-			System.out.println("json:\n" + json);
+			logger.info("json:\n" + json);
 
 			FlowContainer.saveFlow(flowEntityDB);
 			return flowEntityDB;

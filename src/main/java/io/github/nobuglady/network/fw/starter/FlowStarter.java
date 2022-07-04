@@ -14,6 +14,7 @@ package io.github.nobuglady.network.fw.starter;
 
 import io.github.nobuglady.network.fw.executor.NodePool;
 import io.github.nobuglady.network.fw.executor.ReadyQueueConsumerThread;
+import io.github.nobuglady.network.fw.logger.ConsoleLogger;
 import io.github.nobuglady.network.fw.queue.CompleteQueueConsumerThread;
 
 /**
@@ -26,19 +27,26 @@ public class FlowStarter {
 	private static ReadyQueueConsumerThread readyQueueConsumerThread;
 	private static CompleteQueueConsumerThread completeQueueConsumerThread;
 
+	private static ConsoleLogger logger = ConsoleLogger.getInstance();
+
 	static {
 		readyQueueConsumerThread = new ReadyQueueConsumerThread(new NodePool());
 		readyQueueConsumerThread.start();
-		System.out.println("Ready queue thread started.");
+		logger.info("Ready queue thread started.");
 
 		completeQueueConsumerThread = new CompleteQueueConsumerThread();
 		completeQueueConsumerThread.start();
-		System.out.println("Complete queue thread started.");
+		logger.info("Complete queue thread started.");
 	}
 
 	public static void shutdown() {
 		readyQueueConsumerThread.shutdown();
+		logger.info("Ready queue thread stoped.");
+
 		completeQueueConsumerThread.shutdown();
+		logger.info("Ready queue thread stoped.");
+
 		NodePool.nodePool.shutdown();
+		logger.info("NodePool stoped.");
 	}
 }

@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import io.github.nobuglady.network.fw.annotation.Node;
+import io.github.nobuglady.network.fw.logger.ConsoleLogger;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
 import io.github.nobuglady.network.fw.starter.FlowStarter;
 
@@ -35,9 +36,11 @@ public class FlowRunner {
 	 */
 	public int execute(String flowId, String nodeId, String historyId, HistoryNodeEntity nodeEntity) throws Exception {
 
+		ConsoleLogger logger = ConsoleLogger.getInstance(flowId, historyId);
+
 		String nodeName = nodeEntity.getNodeName();
-		System.out.println("execute:" + nodeId);
-		System.out.println("node name:" + nodeEntity.getNodeName());
+		logger.info("execute node id:" + nodeId);
+		logger.info("execute node name:" + nodeEntity.getNodeName());
 
 		Method methods[] = this.getClass().getMethods();
 		if (methods != null) {
