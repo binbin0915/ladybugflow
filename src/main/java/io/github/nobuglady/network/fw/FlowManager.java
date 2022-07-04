@@ -55,8 +55,12 @@ public class FlowManager {
 		String historyId = nodeResult.getHistoryId();
 
 		try {
-			FlowMarker.onNodeComplete(nodeResult);
+			boolean markResult = FlowMarker.onNodeComplete(nodeResult);
 
+			if(!markResult) {
+				return;
+			}
+			
 			List<HistoryNodeEntity> readyNodeList = getReadyNode(flowId, historyId);
 
 			if (readyNodeList.size() > 0) {

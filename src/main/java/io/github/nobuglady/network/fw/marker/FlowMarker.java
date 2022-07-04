@@ -36,8 +36,9 @@ public class FlowMarker {
 	/**
 	 * 
 	 * @param nodeResult
+	 * @return
 	 */
-	public static void onNodeComplete(CompleteNodeResult nodeResult) {
+	public static boolean onNodeComplete(CompleteNodeResult nodeResult) {
 
 		String flowId = nodeResult.getFlowId();
 		String historyId = nodeResult.getHistoryId();
@@ -46,13 +47,13 @@ public class FlowMarker {
 		HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId, nodeId, historyId);
 
 		if (NodeStatus.COMPLETE != historyNodeEntity.getNodeStatus()) {
-			return;
+			return true;
 		}
 
 		FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.GO);
 
 		// mark next
-		markNext(flowId, historyId, nodeId);
+		return markNext(flowId, historyId, nodeId);
 
 	}
 
@@ -61,8 +62,9 @@ public class FlowMarker {
 	 * @param flowId
 	 * @param historyId
 	 * @param nodeId
+	 * @return
 	 */
-	private static void markNext(String flowId, String historyId, String nodeId) {
+	private static boolean markNext(String flowId, String historyId, String nodeId) {
 
 		FlowHelperModel flow = flowHelper.getFlow(flowId, historyId);
 
@@ -87,13 +89,16 @@ public class FlowMarker {
 				for (HistoryEdgeEntity flowEdgeBack : edgeBackList) {
 					HistoryNodeEntity nodeFrom = nodeMap.get(flowEdgeBack.getFromNodeId());
 
-					if(!(NodeStatusDetail.COMPLETE_SUCCESS == nodeFrom.getNodeStatusDetail())) {
+					System.out.println("detail:"+nodeFrom.getNodeStatusDetail());
+					if(NodeStatusDetail.NONE == nodeFrom.getNodeStatusDetail()) {
 						
 						needWait = true;
+						break;
 						
-						if(!(NodeStatusDetail.NONE == nodeFrom.getNodeStatusDetail())) {
+					}else {
+
+						if(!(NodeStatusDetail.COMPLETE_SUCCESS == nodeFrom.getNodeStatusDetail())) {
 							hasError = true;
-							break;
 						}
 						
 					}
@@ -101,18 +106,28 @@ public class FlowMarker {
 				}
 
 				if (!needWait) {
-					FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.READY);
-				} else {
 					if(hasError) {
 						FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.INIT);
-					}else {
-						FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.WAIT);
+					} else {
+						synchronized (FlowMarker.class){
+							HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId, nodeTo.getNodeId(), historyId);
+							if(historyNodeEntity.getNodeStatus() != NodeStatus.READY) {
+								FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.READY);
+							}else {
+								return false;
+							}
+						}
+						
 					}
+						
+				} else {
+					FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.WAIT);
 				}
 
 			}
 		}
 		
+		return true;
 	}
 
 }

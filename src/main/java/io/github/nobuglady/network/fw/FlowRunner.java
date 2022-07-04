@@ -75,4 +75,24 @@ public class FlowRunner {
 
 		return 0;
 	}
+	
+//	/**
+//	 * 
+//	 * @return
+//	 */
+//	public int startFlow(boolean sync) {
+//		
+//		if(!sync) {
+//			return startFlow();
+//		}
+//		
+//		try {
+//			Class.forName(FlowStarter.class.getName());
+//			FlowManager.startFlow(this);
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return 0;
+//	}
 }
