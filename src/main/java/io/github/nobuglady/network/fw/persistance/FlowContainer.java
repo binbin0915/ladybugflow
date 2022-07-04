@@ -52,8 +52,7 @@ public class FlowContainer {
 	 * @return
 	 */
 	public static List<HistoryEdgeEntity> selectEdgeByFlowHistoryId(String flowId, String historyId) {
-		String flowKey = getFlowKey(flowId, historyId);
-		FlowEntity flowEntity = flowMap.get(flowKey);
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
 
 		if (flowEntity != null) {
 			return flowEntity.edgeEntityList;
@@ -70,9 +69,8 @@ public class FlowContainer {
 	 * @return
 	 */
 	public static List<HistoryNodeEntity> selectNodeByFlowHistoryId(String flowId, String historyId) {
-		String flowKey = getFlowKey(flowId, historyId);
-		FlowEntity flowEntity = flowMap.get(flowKey);
-
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
+		
 		if (flowEntity != null) {
 			return flowEntity.nodeEntityList;
 		} else {
@@ -87,9 +85,8 @@ public class FlowContainer {
 	 * @return
 	 */
 	public static HistoryFlowEntity selectFlowByKey(String flowId, String historyId) {
-		String flowKey = getFlowKey(flowId, historyId);
-		FlowEntity flowEntity = flowMap.get(flowKey);
-
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
+		
 		if (flowEntity != null) {
 			return flowEntity.flowEntity;
 		} else {
@@ -105,8 +102,7 @@ public class FlowContainer {
 	 * @return
 	 */
 	public static HistoryNodeEntity selectNodeByKey(String flowId, String nodeId, String historyId) {
-		String flowKey = getFlowKey(flowId, historyId);
-		FlowEntity flowEntity = flowMap.get(flowKey);
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
 
 		if (flowEntity != null) {
 			for (HistoryNodeEntity nodeEntity : flowEntity.nodeEntityList) {
@@ -128,8 +124,7 @@ public class FlowContainer {
 	 * @param nodeStatus
 	 */
 	public static void updateNodeStatusByNodeId(String flowId, String historyId, String nodeId, int nodeStatus) {
-		String flowKey = getFlowKey(flowId, historyId);
-		FlowEntity flowEntity = flowMap.get(flowKey);
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
 
 		if (flowEntity != null) {
 			for (HistoryNodeEntity nodeEntity : flowEntity.nodeEntityList) {
@@ -147,8 +142,7 @@ public class FlowContainer {
 	 * @param flowStatus
 	 */
 	public static void updateFlowStatus(String flowId, String historyId, int flowStatus) {
-		String flowKey = getFlowKey(flowId, historyId);
-		FlowEntity flowEntity = flowMap.get(flowKey);
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
 
 		if (flowEntity != null) {
 			flowEntity.flowEntity.setFlowStatus(flowStatus);
@@ -165,8 +159,7 @@ public class FlowContainer {
 	public static List<HistoryNodeEntity> selectNodeListByStatus(String flowId, String historyId, int nodeStatus) {
 		List<HistoryNodeEntity> resultList = new ArrayList<>();
 
-		String flowKey = getFlowKey(flowId, historyId);
-		FlowEntity flowEntity = flowMap.get(flowKey);
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
 
 		if (flowEntity != null) {
 			for (HistoryNodeEntity nodeEntity : flowEntity.nodeEntityList) {
@@ -191,9 +184,8 @@ public class FlowContainer {
 			int nodeStatusDetail) {
 		List<HistoryNodeEntity> resultList = new ArrayList<>();
 
-		String flowKey = getFlowKey(flowId, historyId);
-		FlowEntity flowEntity = flowMap.get(flowKey);
-
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
+		
 		if (flowEntity != null) {
 			for (HistoryNodeEntity nodeEntity : flowEntity.nodeEntityList) {
 				if (nodeEntity.getNodeStatus() == nodeStatus && nodeEntity.getNodeStatusDetail() == nodeStatusDetail) {
@@ -215,8 +207,7 @@ public class FlowContainer {
 	 */
 	public static void updateNodeStatusDetailByNodeId(String flowId, String historyId, String nodeId, int nodeStatus,
 			int nodeStatusDetail) {
-		String flowKey = getFlowKey(flowId, historyId);
-		FlowEntity flowEntity = flowMap.get(flowKey);
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
 
 		if (flowEntity != null) {
 			for (HistoryNodeEntity nodeEntity : flowEntity.nodeEntityList) {
@@ -240,6 +231,18 @@ public class FlowContainer {
 
 	}
 
+	/**
+	 * 
+	 * @param flowId
+	 * @param historyId
+	 * @return
+	 */
+	private static FlowEntity getFlowEntityByKey(String flowId, String historyId) {
+		String flowKey = getFlowKey(flowId, historyId);
+		return flowMap.get(flowKey);
+
+	}
+	
 	/**
 	 * 
 	 * @param flowId
