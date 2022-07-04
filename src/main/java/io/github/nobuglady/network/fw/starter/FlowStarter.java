@@ -25,7 +25,7 @@ public class FlowStarter {
 
 	private static ReadyQueueConsumerThread readyQueueConsumerThread;
 	private static CompleteQueueConsumerThread completeQueueConsumerThread;
-	
+
 	static {
 		readyQueueConsumerThread = new ReadyQueueConsumerThread(new NodePool());
 		readyQueueConsumerThread.start();
@@ -35,7 +35,7 @@ public class FlowStarter {
 		completeQueueConsumerThread.start();
 		System.out.println("Complete queue thread started.");
 	}
-	
+
 	public static void shutdown() {
 		readyQueueConsumerThread.shutdown();
 		completeQueueConsumerThread.shutdown();

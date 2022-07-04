@@ -57,10 +57,10 @@ public class FlowManager {
 		try {
 			boolean markResult = FlowMarker.onNodeComplete(nodeResult);
 
-			if(!markResult) {
+			if (!markResult) {
 				return;
 			}
-			
+
 			List<HistoryNodeEntity> readyNodeList = getReadyNode(flowId, historyId);
 
 			if (readyNodeList.size() > 0) {
@@ -75,7 +75,7 @@ public class FlowManager {
 				List<HistoryNodeEntity> errorNodeList = getErrorNode(flowId, historyId);
 
 				if (runningNodeList.size() == 0 && openingNodeList.size() == 0 && waitingNodeList.size() == 0) {
-					
+
 					if (errorNodeList.size() > 0) {
 						System.out.println("Complete error.");
 						updateFlowStatus(flowId, historyId, true);
@@ -83,9 +83,9 @@ public class FlowManager {
 						System.out.println("Complete success.");
 						updateFlowStatus(flowId, historyId, false);
 					}
-					
-					System.out.println("json:\n"+FlowUtil.dumpJson(flowId,historyId));
-					FlowContainer.flowMap.remove(flowId+","+historyId);
+
+					System.out.println("json:\n" + FlowUtil.dumpJson(flowId, historyId));
+					FlowContainer.flowMap.remove(flowId + "," + historyId);
 				}
 			}
 		} catch (Exception e) {

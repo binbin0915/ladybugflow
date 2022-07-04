@@ -33,18 +33,18 @@ public class FlowRunner {
 	 * @param nodeId
 	 * @return
 	 */
-	public int execute(String flowId, String nodeId, String historyId, HistoryNodeEntity nodeEntity) throws Exception{
+	public int execute(String flowId, String nodeId, String historyId, HistoryNodeEntity nodeEntity) throws Exception {
 
 		String nodeName = nodeEntity.getNodeName();
 		System.out.println("execute:" + nodeId);
 		System.out.println("node name:" + nodeEntity.getNodeName());
 
 		Method methods[] = this.getClass().getMethods();
-		if(methods != null) {
-			for(Method method:methods) {
+		if (methods != null) {
+			for (Method method : methods) {
 				Node node = method.getAnnotation(Node.class);
-				if(node != null) {
-					if(node.id().equals(nodeId) || node.label().equals(nodeName)) {
+				if (node != null) {
+					if (node.id().equals(nodeId) || node.label().equals(nodeName)) {
 						try {
 							method.invoke(this);
 							return 0;
@@ -59,13 +59,13 @@ public class FlowRunner {
 		return 0;
 
 	}
-	
+
 	/**
 	 * 
 	 * @return
 	 */
 	public int startFlow() {
-		
+
 		try {
 			Class.forName(FlowStarter.class.getName());
 			FlowManager.startFlow(this);
@@ -75,7 +75,7 @@ public class FlowRunner {
 
 		return 0;
 	}
-	
+
 //	/**
 //	 * 
 //	 * @return

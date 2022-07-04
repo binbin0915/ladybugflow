@@ -25,7 +25,7 @@ import java.util.Map;
 public class ConsoleLogger {
 
 	public static boolean enabled = false;
-	
+
 	private static Map<String, ConsoleLogger> instanceMap = new HashMap<>();
 
 	private PrintStream pw = System.out;
@@ -58,7 +58,7 @@ public class ConsoleLogger {
 	 * @param message
 	 */
 	public void info(String message) {
-		if(enabled) {
+		if (enabled) {
 			pw.println(Thread.currentThread().getName() + ":" + message);
 		}
 	}
@@ -69,7 +69,7 @@ public class ConsoleLogger {
 	 * @param e
 	 */
 	public void error(String message, Throwable e) {
-		if(enabled) {
+		if (enabled) {
 			pw.println(Thread.currentThread().getName() + ":" + message);
 			pw.println(Thread.currentThread().getName() + ":" + e.getMessage());
 		}

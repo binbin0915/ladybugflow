@@ -50,8 +50,8 @@ public class FlowHelper {
 	 * @param historyNodeEntityList
 	 * @return
 	 */
-	private static FlowHelperModel loadConfig(HistoryFlowEntity historyFlowEntity, List<HistoryEdgeEntity> historyEdgeEntityList,
-			List<HistoryNodeEntity> historyNodeEntityList) {
+	private static FlowHelperModel loadConfig(HistoryFlowEntity historyFlowEntity,
+			List<HistoryEdgeEntity> historyEdgeEntityList, List<HistoryNodeEntity> historyNodeEntityList) {
 
 		FlowHelperModel flow = new FlowHelperModel();
 		flow.setHistoryId(historyFlowEntity.getHistoryId());

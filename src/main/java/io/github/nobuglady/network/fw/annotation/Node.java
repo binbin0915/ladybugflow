@@ -23,13 +23,9 @@ import java.lang.annotation.ElementType;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({
-    ElementType.TYPE,
-    ElementType.FIELD,
-    ElementType.CONSTRUCTOR,
-    ElementType.METHOD
-})
+@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.METHOD })
 public @interface Node {
 	String id() default "";
+
 	String label() default "";
 }

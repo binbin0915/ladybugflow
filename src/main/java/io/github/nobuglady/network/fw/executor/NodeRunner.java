@@ -60,7 +60,7 @@ public class NodeRunner implements Runnable {
 	public void run() {
 
 		String nodeName = "";
-		
+
 		// start log
 		ConsoleLogger consoleLogger = ConsoleLogger.getInstance(flowId, historyId);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
@@ -68,7 +68,7 @@ public class NodeRunner implements Runnable {
 		consoleLogger.info("-------------------------------------------------------------------");
 		consoleLogger.info("[FLOW]" + flowId + ",[HISTORY]" + historyId + ",[NODE]" + nodeId + "");
 		consoleLogger.info("-------------------------------------------------------------------");
-		
+
 		try {
 
 			// get flow, node
@@ -90,14 +90,15 @@ public class NodeRunner implements Runnable {
 			// run
 			FlowRunner flowRunner = FlowContainer.flowRunnerMap.get(flowId + "," + historyId);
 			consoleLogger.info(sdf.format(new Date()) + " [NODE RUNNING]" + historyNodeEntity.getNodeName());
-			int returnValue = flowRunner.execute(historyNodeEntity.getFlowId(), historyNodeEntity.getNodeId(), historyNodeEntity.getHistoryId(), historyNodeEntity);
+			int returnValue = flowRunner.execute(historyNodeEntity.getFlowId(), historyNodeEntity.getNodeId(),
+					historyNodeEntity.getHistoryId(), historyNodeEntity);
 
 			// complete
 			consoleLogger.info(
 					sdf.format(new Date()) + " [NODE COMPLETE][" + returnValue + "]" + historyNodeEntity.getNodeName());
 			FlowContainer.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE,
 					NodeStatusDetail.COMPLETE_SUCCESS);
-			
+
 			CompleteQueueManager.getInstance().putCompleteNode(flowId, historyId, nodeId);
 
 		} catch (CancellationException e) {
@@ -108,9 +109,9 @@ public class NodeRunner implements Runnable {
 			CompleteQueueManager.getInstance().putCompleteNode(flowId, historyId, nodeId);
 
 		} catch (Throwable e) {
-			
+
 			e.printStackTrace();
-			
+
 			consoleLogger.error(sdf.format(new Date()) + " [NODE ERROR]" + nodeName, e);
 			FlowContainer.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE,
 					NodeStatusDetail.COMPLETE_ERROR);

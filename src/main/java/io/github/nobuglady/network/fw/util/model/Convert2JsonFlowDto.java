@@ -68,7 +68,7 @@ public class Convert2JsonFlowDto {
 			} else if (NodeStatus.INIT == jobNodeDto.status) {
 				json.append(",");
 				json.append("\"color\": \"#E8F9FD\"");
-			}else if (NodeStatus.WAIT == jobNodeDto.status) {
+			} else if (NodeStatus.WAIT == jobNodeDto.status) {
 				json.append(",");
 				json.append("\"color\": \"#E8F9FD\"");
 			} else if (NodeStatus.READY == jobNodeDto.status) {

@@ -70,7 +70,7 @@ public class FlowContainer {
 	 */
 	public static List<HistoryNodeEntity> selectNodeByFlowHistoryId(String flowId, String historyId) {
 		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
-		
+
 		if (flowEntity != null) {
 			return flowEntity.nodeEntityList;
 		} else {
@@ -86,7 +86,7 @@ public class FlowContainer {
 	 */
 	public static HistoryFlowEntity selectFlowByKey(String flowId, String historyId) {
 		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
-		
+
 		if (flowEntity != null) {
 			return flowEntity.flowEntity;
 		} else {
@@ -185,7 +185,7 @@ public class FlowContainer {
 		List<HistoryNodeEntity> resultList = new ArrayList<>();
 
 		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
-		
+
 		if (flowEntity != null) {
 			for (HistoryNodeEntity nodeEntity : flowEntity.nodeEntityList) {
 				if (nodeEntity.getNodeStatus() == nodeStatus && nodeEntity.getNodeStatusDetail() == nodeStatusDetail) {
@@ -242,7 +242,7 @@ public class FlowContainer {
 		return flowMap.get(flowKey);
 
 	}
-	
+
 	/**
 	 * 
 	 * @param flowId

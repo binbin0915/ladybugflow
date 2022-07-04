@@ -72,7 +72,7 @@ public class FlowMarker {
 		Map<String, HistoryNodeEntity> nodeMap = flow.getNodeMap();
 
 		List<HistoryEdgeEntity> edgeList = edgesMap.get(nodeId);
-		
+
 		// update next
 		if (edgeList != null && edgeList.size() > 0) {
 			for (HistoryEdgeEntity edge : edgeList) {
@@ -89,44 +89,46 @@ public class FlowMarker {
 				for (HistoryEdgeEntity flowEdgeBack : edgeBackList) {
 					HistoryNodeEntity nodeFrom = nodeMap.get(flowEdgeBack.getFromNodeId());
 
-					System.out.println("detail:"+nodeFrom.getNodeStatusDetail());
-					if(NodeStatusDetail.NONE == nodeFrom.getNodeStatusDetail()) {
-						
+					System.out.println("detail:" + nodeFrom.getNodeStatusDetail());
+					if (NodeStatusDetail.NONE == nodeFrom.getNodeStatusDetail()) {
+
 						needWait = true;
 						break;
-						
-					}else {
 
-						if(!(NodeStatusDetail.COMPLETE_SUCCESS == nodeFrom.getNodeStatusDetail())) {
+					} else {
+
+						if (!(NodeStatusDetail.COMPLETE_SUCCESS == nodeFrom.getNodeStatusDetail())) {
 							hasError = true;
 						}
-						
+
 					}
-					
+
 				}
 
 				if (!needWait) {
-					if(hasError) {
+					if (hasError) {
 						FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.INIT);
 					} else {
-						synchronized (FlowMarker.class){
-							HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId, nodeTo.getNodeId(), historyId);
-							if(historyNodeEntity.getNodeStatus() != NodeStatus.READY) {
-								FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.READY);
-							}else {
+						synchronized (FlowMarker.class) {
+							HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId,
+									nodeTo.getNodeId(), historyId);
+							if (historyNodeEntity.getNodeStatus() != NodeStatus.READY) {
+								FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
+										NodeStatus.READY);
+							} else {
 								return false;
 							}
 						}
-						
+
 					}
-						
+
 				} else {
 					FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.WAIT);
 				}
 
 			}
 		}
-		
+
 		return true;
 	}
 
