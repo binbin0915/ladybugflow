@@ -22,8 +22,10 @@ public class NodeStatus {
 	/** node condition skip */
 	public static final int SKIPED = 999;
 
+	/** node init */
+	public static final int INIT = 0;
 	/** node wait */
-	public static final int WAIT = 0;
+	public static final int WAIT = 1;
 	/** node ready */
 	public static final int READY = 2;
 

@@ -49,12 +49,6 @@ public class FlowMarker {
 			return;
 		}
 
-		if (NodeStatus.COMPLETE == historyNodeEntity.getNodeStatus()
-				&& NodeStatusDetail.COMPLETE_SUCCESS != historyNodeEntity.getNodeStatusDetail()) {
-			// has error
-			return;
-		}
-
 		FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.GO);
 
 		// mark next
@@ -76,6 +70,8 @@ public class FlowMarker {
 		Map<String, HistoryNodeEntity> nodeMap = flow.getNodeMap();
 
 		List<HistoryEdgeEntity> edgeList = edgesMap.get(nodeId);
+		
+		// update next
 		if (edgeList != null && edgeList.size() > 0) {
 			for (HistoryEdgeEntity edge : edgeList) {
 				HistoryNodeEntity nodeTo = nodeMap.get(edge.getToNodeId());
@@ -85,21 +81,38 @@ public class FlowMarker {
 				}
 
 				boolean needWait = false;
+				boolean hasError = false;
 				Map<String, List<HistoryEdgeEntity>> edgesBackMap = flow.getEdgesBackMap();
 				List<HistoryEdgeEntity> edgeBackList = edgesBackMap.get(nodeTo.getNodeId());
 				for (HistoryEdgeEntity flowEdgeBack : edgeBackList) {
 					HistoryNodeEntity nodeFrom = nodeMap.get(flowEdgeBack.getFromNodeId());
-					if (!(NodeStatus.GO == nodeFrom.getNodeStatus())) {
+
+					if(!(NodeStatusDetail.COMPLETE_SUCCESS == nodeFrom.getNodeStatusDetail())) {
+						
 						needWait = true;
+						
+						if(!(NodeStatusDetail.NONE == nodeFrom.getNodeStatusDetail())) {
+							hasError = true;
+							break;
+						}
+						
 					}
+					
 				}
 
 				if (!needWait) {
 					FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.READY);
+				} else {
+					if(hasError) {
+						FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.INIT);
+					}else {
+						FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.WAIT);
+					}
 				}
 
 			}
 		}
+		
 	}
 
 }

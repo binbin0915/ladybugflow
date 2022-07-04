@@ -20,6 +20,8 @@ package io.github.nobuglady.network.fw.constant;
 public class NodeStatusDetail {
 
 	/** node execute success */
+	public static final int NONE = 0;
+	/** node execute success */
 	public static final int COMPLETE_SUCCESS = 1;
 	/** node execute error */
 	public static final int COMPLETE_ERROR = -1;
