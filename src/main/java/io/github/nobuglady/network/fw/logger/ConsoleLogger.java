@@ -34,6 +34,9 @@ public class ConsoleLogger {
 
 	/**
 	 * constructor
+	 * 
+	 * @param flowId flowId
+	 * @param historyId historyId
 	 */
 	private ConsoleLogger(String flowId, String historyId) {
 		this.key = "[" + flowId + "][" + historyId + "]";
@@ -41,6 +44,8 @@ public class ConsoleLogger {
 
 	/**
 	 * constructor
+	 * 
+	 * @param flowId flowId
 	 */
 	private ConsoleLogger(String flowId) {
 		this.key = "[" + flowId + "]";
@@ -54,35 +59,39 @@ public class ConsoleLogger {
 	}
 
 	/**
+	 * getInstance
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @return
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @return ConsoleLogger
 	 */
 	public static ConsoleLogger getInstance(String flowId, String historyId) {
 		return new ConsoleLogger(flowId, historyId);
 	}
 
 	/**
+	 * getInstance
 	 * 
-	 * @param flowId
-	 * @return
+	 * @param flowId flowId
+	 * @return ConsoleLogger
 	 */
 	public static ConsoleLogger getInstance(String flowId) {
 		return new ConsoleLogger(flowId);
 	}
 
 	/**
+	 * getInstance
 	 * 
-	 * @return
+	 * @return ConsoleLogger
 	 */
 	public static ConsoleLogger getInstance() {
 		return new ConsoleLogger();
 	}
 
 	/**
+	 * debug
 	 * 
-	 * @param message
+	 * @param message message
 	 */
 	public void debug(String message) {
 		if (debug_on) {
@@ -91,17 +100,19 @@ public class ConsoleLogger {
 	}
 
 	/**
+	 * info
 	 * 
-	 * @param message
+	 * @param message message
 	 */
 	public void info(String message) {
 		pw.println("[I]" + getHeader() + message);
 	}
 
 	/**
+	 * error
 	 * 
-	 * @param message
-	 * @param e
+	 * @param message message
+	 * @param e exception
 	 */
 	public void error(String message, Throwable e) {
 		pw.println("[E]" + getHeader() + message);
@@ -109,16 +120,18 @@ public class ConsoleLogger {
 	}
 
 	/**
+	 * getHeader
 	 * 
-	 * @return
+	 * @return String
 	 */
 	private String getHeader() {
 		return getTime() + " " + key + " " + Thread.currentThread().getName() + ":";
 	}
 
 	/**
+	 * getTime
 	 * 
-	 * @return
+	 * @return String
 	 */
 	private String getTime() {
 		return sdf.format(new Date());

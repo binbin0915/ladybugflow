@@ -29,10 +29,11 @@ import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
 public class FlowHelper {
 
 	/**
+	 * getFlow
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @return
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @return FlowHelperModel
 	 */
 	public FlowHelperModel getFlow(String flowId, String historyId) {
 
@@ -44,11 +45,12 @@ public class FlowHelper {
 	}
 
 	/**
+	 * loadConfig
 	 * 
-	 * @param historyFlowEntity
-	 * @param historyEdgeEntityList
-	 * @param historyNodeEntityList
-	 * @return
+	 * @param historyFlowEntity historyFlowEntity
+	 * @param historyEdgeEntityList historyEdgeEntityList
+	 * @param historyNodeEntityList historyNodeEntityList
+	 * @return FlowHelperModel
 	 */
 	private static FlowHelperModel loadConfig(HistoryFlowEntity historyFlowEntity,
 			List<HistoryEdgeEntity> historyEdgeEntityList, List<HistoryNodeEntity> historyNodeEntityList) {

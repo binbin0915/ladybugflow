@@ -28,11 +28,14 @@ import io.github.nobuglady.network.fw.starter.FlowStarter;
 public class FlowRunner {
 
 	/**
+	 * execute
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @param nodeId
-	 * @return
+	 * @param flowId flowId
+	 * @param nodeId nodeId
+	 * @param historyId historyId
+	 * @param nodeEntity nodeEntity
+	 * @return execute result
+	 * @throws Exception Exception
 	 */
 	public int execute(String flowId, String nodeId, String historyId, HistoryNodeEntity nodeEntity) throws Exception {
 
@@ -64,8 +67,9 @@ public class FlowRunner {
 	}
 
 	/**
+	 * startFlow
 	 * 
-	 * @return
+	 * @return start result
 	 */
 	public int startFlow() {
 

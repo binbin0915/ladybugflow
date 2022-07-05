@@ -23,11 +23,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JsonUtil {
 
 	/**
+	 * fromJson
 	 * 
-	 * @param <T>
-	 * @param json
-	 * @param clazz
-	 * @return
+	 * @param <T> entity type
+	 * @param json json
+	 * @param clazz class
+	 * @return entity
 	 */
 	public static <T> T fromJson(String json, Class<T> clazz) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -40,9 +41,10 @@ public class JsonUtil {
 	}
 
 	/**
+	 * toJson
 	 * 
-	 * @param obj
-	 * @return
+	 * @param obj obj
+	 * @return json
 	 */
 	public static String toJson(Object obj) {
 		ObjectMapper mapper = new ObjectMapper();

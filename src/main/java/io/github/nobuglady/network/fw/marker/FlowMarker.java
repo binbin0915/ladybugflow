@@ -34,9 +34,10 @@ public class FlowMarker {
 	private static FlowHelper flowHelper = new FlowHelper();
 
 	/**
+	 * onNodeComplete
 	 * 
-	 * @param nodeResult
-	 * @return
+	 * @param nodeResult nodeResult
+	 * @return true:check flow status
 	 */
 	public static boolean onNodeComplete(CompleteNodeResult nodeResult) {
 
@@ -58,11 +59,12 @@ public class FlowMarker {
 	}
 
 	/**
+	 * markNext
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @param nodeId
-	 * @return
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @param nodeId nodeId
+	 * @return true:check flow status
 	 */
 	private static boolean markNext(String flowId, String historyId, String nodeId) {
 

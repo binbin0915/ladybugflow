@@ -34,8 +34,9 @@ public class NodePool {
 	}
 
 	/**
+	 * onNodeReady
 	 * 
-	 * @param nodeResult
+	 * @param nodeResult nodeResult
 	 */
 	public void onNodeReady(ReadyNodeResult nodeResult) {
 

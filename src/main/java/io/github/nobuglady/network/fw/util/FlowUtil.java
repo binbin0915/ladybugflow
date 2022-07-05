@@ -29,10 +29,11 @@ import io.github.nobuglady.network.fw.util.model.Convert2JsonNodeDto;
 public class FlowUtil {
 
 	/**
+	 * dumpJson
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @return
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @return json
 	 */
 	public static String dumpJson(String flowId, String historyId) {
 

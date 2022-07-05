@@ -20,9 +20,10 @@ package io.github.nobuglady.network.fw.util;
 public class StringUtil {
 
 	/**
+	 * isEmpty
 	 * 
-	 * @param str
-	 * @return
+	 * @param str str
+	 * @return true:empty
 	 */
 	public static boolean isEmpty(String str) {
 		if (str == null || str.length() == 0) {
@@ -32,20 +33,22 @@ public class StringUtil {
 	}
 
 	/**
+	 * isNotEmpty
 	 * 
-	 * @param str
-	 * @return
+	 * @param str str
+	 * @return true:not empty
 	 */
 	public static boolean isNotEmpty(String str) {
 		return !isEmpty(str);
 	}
 
 	/**
+	 * padding
 	 * 
-	 * @param src
-	 * @param paddingStr
-	 * @param length
-	 * @return
+	 * @param src src
+	 * @param paddingStr paddingStr
+	 * @param length length
+	 * @return String
 	 */
 	public static String padding(long src, String paddingStr, int length) {
 		int iSrc = (int) src;

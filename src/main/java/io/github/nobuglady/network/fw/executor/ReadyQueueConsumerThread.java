@@ -27,15 +27,16 @@ public class ReadyQueueConsumerThread extends Thread {
 	private NodePool nodePool;
 
 	/**
+	 * Constructor
 	 * 
-	 * @param nodePool
+	 * @param nodePool nodePool
 	 */
 	public ReadyQueueConsumerThread(NodePool nodePool) {
 		this.nodePool = nodePool;
 	}
 
 	/**
-	 * 
+	 * run
 	 */
 	public void run() {
 
@@ -54,7 +55,7 @@ public class ReadyQueueConsumerThread extends Thread {
 	}
 
 	/**
-	 * 
+	 * shutdown
 	 */
 	public void shutdown() {
 

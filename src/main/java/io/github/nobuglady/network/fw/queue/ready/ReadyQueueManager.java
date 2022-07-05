@@ -31,27 +31,30 @@ public class ReadyQueueManager {
 	}
 
 	/**
+	 * getInstance
 	 * 
-	 * @return
+	 * @return ReadyQueueManager
 	 */
 	public static ReadyQueueManager getInstance() {
 		return instance;
 	}
 
 	/**
+	 * takeCompleteNode
 	 * 
-	 * @return
-	 * @throws InterruptedException
+	 * @return ReadyNodeResult
+	 * @throws InterruptedException InterruptedException
 	 */
 	public ReadyNodeResult takeCompleteNode() throws InterruptedException {
 		return nodeCompleteQueue.take();
 	}
 
 	/**
+	 * putReadyNode
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @param nodeId
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @param nodeId nodeId
 	 */
 	public void putReadyNode(String flowId, String historyId, String nodeId) {
 		try {

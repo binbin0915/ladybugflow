@@ -35,15 +35,11 @@ public class NodeRunner implements Runnable {
 	private String nodeId;
 
 	/**
+	 * Constructor
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @param nodeId
-	 * @param historyFlowDao
-	 * @param historyNodeDao
-	 * @param historyNodeHttpDao
-	 * @param historyNodeShellDao
-	 * @param nodeDelegator
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @param nodeId nodeId
 	 */
 	public NodeRunner(String flowId, String historyId, String nodeId) {
 
@@ -53,7 +49,7 @@ public class NodeRunner implements Runnable {
 	}
 
 	/**
-	 * 
+	 * run
 	 */
 	public void run() {
 

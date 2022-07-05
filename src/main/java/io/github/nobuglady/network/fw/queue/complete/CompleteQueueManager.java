@@ -31,8 +31,9 @@ public class CompleteQueueManager {
 	}
 
 	/**
+	 * getInstance
 	 * 
-	 * @return
+	 * @return CompleteQueueManager
 	 */
 	public static CompleteQueueManager getInstance() {
 		return instance;
@@ -40,18 +41,21 @@ public class CompleteQueueManager {
 
 	/**
 	 * 
-	 * @return
-	 * @throws InterruptedException
+	 * takeCompleteNode
+	 * 
+	 * @return CompleteNodeResult
+	 * @throws InterruptedException InterruptedException
 	 */
 	public CompleteNodeResult takeCompleteNode() throws InterruptedException {
 		return nodeCompleteQueue.take();
 	}
 
 	/**
+	 * putCompleteNode
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @param nodeId
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @param nodeId nodeId
 	 */
 	public void putCompleteNode(String flowId, String historyId, String nodeId) {
 		try {

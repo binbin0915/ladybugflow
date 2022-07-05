@@ -47,8 +47,9 @@ import io.github.nobuglady.network.fw.util.FlowUtil;
 public class FlowManager {
 
 	/**
+	 * onNodeComplete
 	 * 
-	 * @param nodeResult
+	 * @param nodeResult nodeResult
 	 */
 	public static void onNodeComplete(CompleteNodeResult nodeResult) {
 
@@ -99,8 +100,9 @@ public class FlowManager {
 	}
 
 	/**
+	 * startFlow
 	 * 
-	 * @param flowRunner
+	 * @param flowRunner flowRunner
 	 */
 	public static void startFlow(FlowRunner flowRunner) {
 
@@ -125,9 +127,10 @@ public class FlowManager {
 	}
 
 	/**
+	 * createHistory
 	 * 
-	 * @param flowPath
-	 * @return
+	 * @param flowPath flowPath
+	 * @return FlowEntity
 	 */
 	private static FlowEntity createHistory(String flowPath) {
 
@@ -140,10 +143,11 @@ public class FlowManager {
 	}
 
 	/**
+	 * loadJson
 	 * 
-	 * @param flowPath
-	 * @param historyId
-	 * @return
+	 * @param flowPath flowPath
+	 * @param historyId historyId
+	 * @return FlowEntity
 	 */
 	private static FlowEntity loadJson(String flowPath, String historyId) {
 
@@ -205,10 +209,11 @@ public class FlowManager {
 	////////////////////////////////////////////////////////
 
 	/**
+	 * updateFlowStatus
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @param hasError
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @param hasError hasError
 	 */
 	public static void updateFlowStatus(String flowId, String historyId, boolean hasError) {
 
@@ -224,9 +229,10 @@ public class FlowManager {
 	//////////////////////////////
 
 	/**
+	 * getFirstNodeId
 	 * 
-	 * @param flow
-	 * @return
+	 * @param flow flow
+	 * @return HistoryNodeEntity
 	 */
 	private static List<HistoryNodeEntity> getFirstNodeId(FlowEntity flow) {
 
@@ -251,10 +257,11 @@ public class FlowManager {
 	}
 
 	/**
+	 * startNode
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @param nodeId
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @param nodeId nodeId
 	 */
 	private static void startNode(String flowId, String historyId, String nodeId) {
 
@@ -262,10 +269,11 @@ public class FlowManager {
 	}
 
 	/**
+	 * getReadyNode
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @return
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @return HistoryNodeEntity
 	 */
 	private static List<HistoryNodeEntity> getReadyNode(String flowId, String historyId) {
 
@@ -281,10 +289,11 @@ public class FlowManager {
 	}
 
 	/**
+	 * getRunningNode
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @return
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @return HistoryNodeEntity
 	 */
 	private static List<HistoryNodeEntity> getRunningNode(String flowId, String historyId) {
 		List<HistoryNodeEntity> result = FlowContainer.selectNodeListByStatus(flowId, historyId, NodeStatus.RUNNING);
@@ -295,10 +304,11 @@ public class FlowManager {
 	}
 
 	/**
+	 * getOpenningNode
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @return
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @return HistoryNodeEntity
 	 */
 	private static List<HistoryNodeEntity> getOpenningNode(String flowId, String historyId) {
 		List<HistoryNodeEntity> result = FlowContainer.selectNodeListByStatus(flowId, historyId, NodeStatus.OPENNING);
@@ -309,10 +319,11 @@ public class FlowManager {
 	}
 
 	/**
+	 * getWaitingNode
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @return
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @return HistoryNodeEntity
 	 */
 	private static List<HistoryNodeEntity> getWaitingNode(String flowId, String historyId) {
 		List<HistoryNodeEntity> result = FlowContainer.selectNodeListByStatus(flowId, historyId, NodeStatus.WAIT);
@@ -323,10 +334,11 @@ public class FlowManager {
 	}
 
 	/**
+	 * getErrorNode
 	 * 
-	 * @param flowId
-	 * @param historyId
-	 * @return
+	 * @param flowId flowId
+	 * @param historyId historyId
+	 * @return HistoryNodeEntity
 	 */
 	private static List<HistoryNodeEntity> getErrorNode(String flowId, String historyId) {
 		List<HistoryNodeEntity> result = FlowContainer.selectNodeListByStatusDetail(flowId, historyId,

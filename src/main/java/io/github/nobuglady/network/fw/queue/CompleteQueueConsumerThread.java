@@ -26,7 +26,7 @@ public class CompleteQueueConsumerThread extends Thread {
 	private volatile boolean stopFlag = false;
 
 	/**
-	 * 
+	 * run
 	 */
 	public void run() {
 
@@ -46,7 +46,7 @@ public class CompleteQueueConsumerThread extends Thread {
 	}
 
 	/**
-	 * 
+	 * shutdown
 	 */
 	public void shutdown() {
 
