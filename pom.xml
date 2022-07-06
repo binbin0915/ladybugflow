@@ -3,9 +3,12 @@
   <groupId>io.github.nobuglady</groupId>
   <artifactId>nobuglady-network</artifactId>
   <packaging>jar</packaging>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <name>nobuglady-network</name>
   <url>https://github.com/nobuglady/nobuglady-network</url>
+  <description>
+        The nobuglady-network helps to run a flow in java project described by json.
+  </description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -48,6 +51,9 @@
           <serverId>ossrh</serverId>
           <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>false</autoReleaseAfterClose>
+          <keepStagingRepositoryOnFailure>true</keepStagingRepositoryOnFailure>
+          <keepStagingRepositoryOnCloseRuleFailure>true</keepStagingRepositoryOnCloseRuleFailure>
+          <skipStagingRepositoryClose>true</skipStagingRepositoryClose>
         </configuration>
       </plugin>
       <!-- gpg sign -->
@@ -73,7 +79,7 @@
           <execution>
             <id>attach-sources</id>
             <goals>
-              <goal>jar</goal>
+              <goal>jar-no-fork</goal>
             </goals>
           </execution>
         </executions>
@@ -106,12 +112,34 @@
     </snapshotRepository>
     <repository>
       <id>ossrh</id>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
   </distributionManagement>
   <scm>
     <connection>scm:git:https://github.com/nobuglady/nobuglady-network.git</connection>
     <developerConnection>scm:git:https://github.com/nobuglady/nobuglady-network.git</developerConnection>
     <url>https://github.com/nobuglady/nobuglady-network</url>
+    <tag>nobuglady-network-0.0.1</tag>
   </scm>
+  <developers>
+    <developer>
+      <id>nobuglady</id>
+      <name>nobuglady</name>
+      <email>nobuglady@protonmail.com</email>
+      <organization>nobuglady</organization>
+      <organizationUrl>https://github.com/nobuglady/nobuglady-network</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>+9</timezone>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>Apache License 2.0</name>
+      <url>https://raw.githubusercontent.com/nobuglady/nobuglady-network/main/LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>
