@@ -108,7 +108,7 @@ MyFlow1.json
 Then start the flow with the following code.
 ```
 MyFlow1 myFlow1 =  new MyFlow1();
-myFlow1.startFlow(true);
+myFlow1.startFlow();
 ```
 #### 4.Shutdown
 When the system shutdown, close the flow manager by the following code
