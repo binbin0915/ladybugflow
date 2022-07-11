@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.nobuglady</groupId>
-  <artifactId>nobuglady-network</artifactId>
+  <artifactId>ladybugflow</artifactId>
   <packaging>jar</packaging>
   <version>0.0.2-SNAPSHOT</version>
-  <name>nobuglady-network</name>
-  <url>https://github.com/nobuglady/nobuglady-network</url>
+  <name>ladybugflow</name>
+  <url>https://github.com/nobuglady/ladybugflow</url>
   <description>
-        The nobuglady-network helps to run a flow in java project described by json.
+        The ladybugflow helps to run a flow in java project described by json.
   </description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -116,10 +116,10 @@
     </repository>
   </distributionManagement>
   <scm>
-    <connection>scm:git:https://github.com/nobuglady/nobuglady-network.git</connection>
-    <developerConnection>scm:git:https://github.com/nobuglady/nobuglady-network.git</developerConnection>
-    <url>https://github.com/nobuglady/nobuglady-network</url>
-    <tag>nobuglady-network-0.0.1</tag>
+    <connection>scm:git:https://github.com/nobuglady/ladybugflow.git</connection>
+    <developerConnection>scm:git:https://github.com/nobuglady/ladybugflow.git</developerConnection>
+    <url>https://github.com/nobuglady/ladybugflow</url>
+    <tag>ladybugflow-0.0.1</tag>
   </scm>
   <developers>
     <developer>
@@ -127,7 +127,7 @@
       <name>nobuglady</name>
       <email>nobuglady@protonmail.com</email>
       <organization>nobuglady</organization>
-      <organizationUrl>https://github.com/nobuglady/nobuglady-network</organizationUrl>
+      <organizationUrl>https://github.com/nobuglady/ladybugflow</organizationUrl>
       <roles>
         <role>architect</role>
         <role>developer</role>
@@ -138,7 +138,7 @@
   <licenses>
     <license>
       <name>Apache License 2.0</name>
-      <url>https://raw.githubusercontent.com/nobuglady/nobuglady-network/main/LICENSE</url>
+      <url>https://raw.githubusercontent.com/nobuglady/ladybugflow/main/LICENSE</url>
       <distribution>repo</distribution>
     </license>
   </licenses>

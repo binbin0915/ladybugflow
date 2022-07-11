@@ -45,9 +45,9 @@ public class StringUtil {
 	/**
 	 * padding
 	 * 
-	 * @param src src
+	 * @param src        src
 	 * @param paddingStr paddingStr
-	 * @param length length
+	 * @param length     length
 	 * @return String
 	 */
 	public static String padding(long src, String paddingStr, int length) {

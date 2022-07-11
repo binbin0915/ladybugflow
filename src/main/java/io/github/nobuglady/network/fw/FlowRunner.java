@@ -14,6 +14,8 @@ package io.github.nobuglady.network.fw;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import io.github.nobuglady.network.fw.annotation.Node;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
@@ -27,12 +29,14 @@ import io.github.nobuglady.network.fw.starter.FlowStarter;
  */
 public class FlowRunner {
 
+	private BlockingQueue<String> completeQueue = new LinkedBlockingQueue<>();
+
 	/**
 	 * execute
 	 * 
-	 * @param flowId flowId
-	 * @param nodeId nodeId
-	 * @param historyId historyId
+	 * @param flowId     flowId
+	 * @param nodeId     nodeId
+	 * @param historyId  historyId
 	 * @param nodeEntity nodeEntity
 	 * @return execute result
 	 * @throws Exception Exception
@@ -83,23 +87,38 @@ public class FlowRunner {
 		return 0;
 	}
 
-//	/**
-//	 * 
-//	 * @return
-//	 */
-//	public int startFlow(boolean sync) {
-//		
-//		if(!sync) {
-//			return startFlow();
-//		}
-//		
-//		try {
-//			Class.forName(FlowStarter.class.getName());
-//			FlowManager.startFlow(this);
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//
-//		return 0;
-//	}
+	/**
+	 * startFlow
+	 * 
+	 * @param sync sync
+	 * @return start result
+	 */
+	public int startFlow(boolean sync) {
+
+		if (!sync) {
+			return startFlow();
+		} else {
+			startFlow();
+			try {
+				completeQueue.take();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return 0;
+	}
+
+	/**
+	 * putComplete
+	 * 
+	 * @param result result
+	 */
+	public void putComplete(String result) {
+		try {
+			completeQueue.put(result);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }

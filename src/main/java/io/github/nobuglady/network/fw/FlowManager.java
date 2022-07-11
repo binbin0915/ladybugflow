@@ -89,7 +89,15 @@ public class FlowManager {
 					}
 
 					logger.info("json:\n" + FlowUtil.dumpJson(flowId, historyId));
+
+					if (errorNodeList.size() > 0) {
+						FlowContainer.flowRunnerMap.get(flowId + "," + historyId).putComplete("ERROR");
+					} else {
+						FlowContainer.flowRunnerMap.get(flowId + "," + historyId).putComplete("SUCCESS");
+					}
+
 					FlowContainer.flowMap.remove(flowId + "," + historyId);
+					FlowContainer.flowRunnerMap.remove(flowId + "," + historyId);
 				}
 			}
 		} catch (Exception e) {
@@ -145,7 +153,7 @@ public class FlowManager {
 	/**
 	 * loadJson
 	 * 
-	 * @param flowPath flowPath
+	 * @param flowPath  flowPath
 	 * @param historyId historyId
 	 * @return FlowEntity
 	 */
@@ -211,9 +219,9 @@ public class FlowManager {
 	/**
 	 * updateFlowStatus
 	 * 
-	 * @param flowId flowId
+	 * @param flowId    flowId
 	 * @param historyId historyId
-	 * @param hasError hasError
+	 * @param hasError  hasError
 	 */
 	public static void updateFlowStatus(String flowId, String historyId, boolean hasError) {
 
@@ -259,9 +267,9 @@ public class FlowManager {
 	/**
 	 * startNode
 	 * 
-	 * @param flowId flowId
+	 * @param flowId    flowId
 	 * @param historyId historyId
-	 * @param nodeId nodeId
+	 * @param nodeId    nodeId
 	 */
 	private static void startNode(String flowId, String historyId, String nodeId) {
 
@@ -271,7 +279,7 @@ public class FlowManager {
 	/**
 	 * getReadyNode
 	 * 
-	 * @param flowId flowId
+	 * @param flowId    flowId
 	 * @param historyId historyId
 	 * @return HistoryNodeEntity
 	 */
@@ -291,7 +299,7 @@ public class FlowManager {
 	/**
 	 * getRunningNode
 	 * 
-	 * @param flowId flowId
+	 * @param flowId    flowId
 	 * @param historyId historyId
 	 * @return HistoryNodeEntity
 	 */
@@ -306,7 +314,7 @@ public class FlowManager {
 	/**
 	 * getOpenningNode
 	 * 
-	 * @param flowId flowId
+	 * @param flowId    flowId
 	 * @param historyId historyId
 	 * @return HistoryNodeEntity
 	 */
@@ -321,7 +329,7 @@ public class FlowManager {
 	/**
 	 * getWaitingNode
 	 * 
-	 * @param flowId flowId
+	 * @param flowId    flowId
 	 * @param historyId historyId
 	 * @return HistoryNodeEntity
 	 */
@@ -336,7 +344,7 @@ public class FlowManager {
 	/**
 	 * getErrorNode
 	 * 
-	 * @param flowId flowId
+	 * @param flowId    flowId
 	 * @param historyId historyId
 	 * @return HistoryNodeEntity
 	 */

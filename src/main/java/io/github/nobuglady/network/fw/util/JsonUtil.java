@@ -25,8 +25,8 @@ public class JsonUtil {
 	/**
 	 * fromJson
 	 * 
-	 * @param <T> entity type
-	 * @param json json
+	 * @param <T>   entity type
+	 * @param json  json
 	 * @param clazz class
 	 * @return entity
 	 */
