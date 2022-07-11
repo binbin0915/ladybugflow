@@ -1,6 +1,7 @@
 # LadybugFlow
 
 ![](https://img.shields.io/badge/license-Apache2.0-yellow)
+![](https://img.shields.io/badge/Java-1.8-orange)
 
 ### 1. Usage
 
@@ -13,14 +14,14 @@
 <dependency>
     <groupId>io.github.nobuglady</groupId>
     <artifactId>ladybugflow</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 </dependency>
 ```
 
 ##### Gradle
 ```
 // https://mvnrepository.com/artifact/io.github.nobuglady/ladybugflow
-implementation 'io.github.nobuglady:ladybugflow:0.0.1'
+implementation 'io.github.nobuglady:ladybugflow:0.0.2'
 ```
 #### 1.2. Configuration
 
