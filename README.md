@@ -26,9 +26,17 @@ implementation 'io.github.nobuglady:ladybugflow:0.0.1'
 
 You need to make a class that extends from FlowRunner, and a configuration file of flow, which is placed in the same directory.
 
-<img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/1.png?raw=true" alt="" width="400px"/>
+```
+src/main/java
+- test
+  + MyFlow1.java
+src/main/resources
+- test
+  + MyFlow1.json
+```
 
-MyFlow1.java
+<details>
+<summary> <b>MyFlow1.java</b> </summary>
 
 ```
 public class MyFlow1 extends FlowRunner {
@@ -55,7 +63,12 @@ public class MyFlow1 extends FlowRunner {
 }
 ```
 
-MyFlow1.json
+</details>
+
+
+<details>
+<summary><b>MyFlow1.json</b></summary>
+
 ```
 {
 	"flowId": "123",
@@ -105,6 +118,9 @@ MyFlow1.json
 	]
 }
 ```
+
+</details>
+
 #### 1.3. Start
 Then start the flow with the following code.
 ```
@@ -121,7 +137,11 @@ FlowStarter.shutdown();
 ### 2. Run
 
 #### 2.1. Success log
-The success log is as follows
+
+
+<details>
+<summary>The success log is as follows</summary>
+
 ```
 Ready queue thread started.
 Complete queue thread started.
@@ -143,6 +163,7 @@ Complete success.
 json:
 {"nodes":[{"id": "1","label": "a" ,"color": "#36AE7C"},{"id": "2","label": "b" ,"color": "#36AE7C"},{"id": "0b5ba9df-b6c7-4752-94e2-debb6104015c","label": "c" ,"color": "#36AE7C"},{"id": "29bc32c7-acd8-4893-9410-e9895da38b2e","label": "d" ,"color": "#36AE7C"}],"edges":[{"id": "1","from": "1","to": "2","arrows": "to"},{"id": "078ffa82-5eff-4d33-974b-53890f2c9a18","from": "1","to": "0b5ba9df-b6c7-4752-94e2-debb6104015c","arrows": "to"},{"id": "90663193-7077-4aca-9011-55bc8745403f","from": "2","to": "29bc32c7-acd8-4893-9410-e9895da38b2e","arrows": "to"},{"id": "a6882e25-c07a-4abd-907e-e269d4eda0ec","from": "0b5ba9df-b6c7-4752-94e2-debb6104015c","to": "29bc32c7-acd8-4893-9410-e9895da38b2e","arrows": "to"}]}
 ```
+</details>
 
 After the process is ended, you can get the execution result json in the last line.
 Paste json to the following location can check the status of the flow. 
@@ -151,7 +172,11 @@ Paste json to the following location can check the status of the flow.
 <img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/2.gif?raw=true" alt="" width="400px"/>
 
 #### 2.2. Error log
-The error log is as follows
+
+
+<details>
+<summary>The error log is as follows</summary>
+
 ```
 Ready queue thread started.
 Complete queue thread started.
@@ -200,6 +225,8 @@ Complete error.
 json:
 {"nodes":[{"id": "1","label": "a" ,"color": "#36AE7C"},{"id": "2","label": "b" ,"color": "#EB5353"},{"id": "0b5ba9df-b6c7-4752-94e2-debb6104015c","label": "c" ,"color": "#36AE7C"},{"id": "29bc32c7-acd8-4893-9410-e9895da38b2e","label": "d" ,"color": "#E8F9FD"}],"edges":[{"id": "1","from": "1","to": "2","arrows": "to"},{"id": "078ffa82-5eff-4d33-974b-53890f2c9a18","from": "1","to": "0b5ba9df-b6c7-4752-94e2-debb6104015c","arrows": "to"},{"id": "90663193-7077-4aca-9011-55bc8745403f","from": "2","to": "29bc32c7-acd8-4893-9410-e9895da38b2e","arrows": "to"},{"id": "a6882e25-c07a-4abd-907e-e269d4eda0ec","from": "0b5ba9df-b6c7-4752-94e2-debb6104015c","to": "29bc32c7-acd8-4893-9410-e9895da38b2e","arrows": "to"}]}
 ```
+
+</details>
 
 After the process is ended, you can get the execution result json in the last line.
 Paste json to the following location can check the status of the flow. 
