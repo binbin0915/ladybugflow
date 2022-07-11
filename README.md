@@ -121,13 +121,22 @@ public class MyFlow1 extends FlowRunner {
 
 </details>
 
-#### 1.3. Start
+#### 1.3. Create json by UI
+We have a GUI tool which can create the flow json file by UI, In project folder "/html/network.html"
+
+Drawing flow
+<img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/4.gif?raw=true" alt="" width="250px"/>
+
+Generate json
+<img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/5.gif?raw=true" alt="" width="250px"/>
+
+#### 1.4. Start
 Then start the flow with the following code.
 ```
 MyFlow1 myFlow1 =  new MyFlow1();
 myFlow1.startFlow();
 ```
-#### 1.4. Shutdown
+#### 1.5. Shutdown
 When the system shutdown, close the flow manager by the following code
 
 ```
@@ -169,7 +178,7 @@ After the process is ended, you can get the execution result json in the last li
 Paste json to the following location can check the status of the flow. 
 (green:success, red:error, white:waiting).
 
-<img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/2.gif?raw=true" alt="" width="400px"/>
+<img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/2.gif?raw=true" alt="" width="250px"/>
 
 #### 2.2. Error log
 
@@ -232,4 +241,4 @@ After the process is ended, you can get the execution result json in the last li
 Paste json to the following location can check the status of the flow. 
 (green:success, red:error, white:waiting).
 
-<img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/3.gif?raw=true" alt="" width="400px"/>
+<img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/3.gif?raw=true" alt="" width="250px"/>
