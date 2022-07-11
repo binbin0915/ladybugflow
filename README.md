@@ -1,10 +1,27 @@
-# :izakaya_lantern:nobuglady-network:izakaya_lantern:
+# LadybugFlow
 
 ![](https://img.shields.io/badge/license-Apache2.0-yellow)
 
 ### :blue_book: Usage
 
-#### Configuration
+#### 1.Import
+
+##### Maven
+```
+<!-- https://mvnrepository.com/artifact/io.github.nobuglady/ladybugflow -->
+<dependency>
+    <groupId>io.github.nobuglady</groupId>
+    <artifactId>ladybugflow</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
+
+##### Gradle
+```
+// https://mvnrepository.com/artifact/io.github.nobuglady/ladybugflow
+implementation 'io.github.nobuglady:ladybugflow:0.0.1'
+```
+#### 2.Configuration
 
 You need to make a class that extends from FlowRunner, and a configuration file of flow, which is placed in the same directory.
 
@@ -87,13 +104,13 @@ MyFlow1.json
 	]
 }
 ```
-#### Start
+#### 3.Start
 Then start the flow with the following code.
 ```
 MyFlow1 myFlow1 =  new MyFlow1();
-myFlow1.startFlow();
+myFlow1.startFlow(true);
 ```
-#### Shutdown
+#### 4.Shutdown
 When the system shutdown, close the flow manager by the following code
 
 ```
@@ -102,7 +119,7 @@ FlowStarter.shutdown();
 
 ### :blue_book: Run
 
-#### Success log
+#### 1.Success log
 The success log is as follows
 ```
 Ready queue thread started.
@@ -132,7 +149,7 @@ Paste json to the following location can check the status of the flow.
 
 <img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/2.gif?raw=true" alt="" width="400px"/>
 
-#### Error log
+#### 2.Error log
 The error log is as follows
 ```
 Ready queue thread started.
