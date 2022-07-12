@@ -3,7 +3,7 @@
   <groupId>io.github.nobuglady</groupId>
   <artifactId>ladybugflow</artifactId>
   <packaging>jar</packaging>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.4-SNAPSHOT</version>
   <name>ladybugflow</name>
   <url>https://github.com/nobuglady/ladybugflow</url>
   <description>
