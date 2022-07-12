@@ -12,13 +12,17 @@
  */
 package io.github.nobuglady.network.fw.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * 
  * @author NoBugLady
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class NodeDto {
 
 	public String id;
 	public String label;
+	public int readyCheck;
 }

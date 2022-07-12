@@ -15,6 +15,8 @@ package io.github.nobuglady.network.fw.marker;
 import java.util.List;
 import java.util.Map;
 
+import io.github.nobuglady.network.fw.constant.EdgeStatus;
+import io.github.nobuglady.network.fw.constant.NodeReadyCheck;
 import io.github.nobuglady.network.fw.constant.NodeStatus;
 import io.github.nobuglady.network.fw.constant.NodeStatusDetail;
 import io.github.nobuglady.network.fw.marker.helper.FlowHelper;
@@ -23,6 +25,7 @@ import io.github.nobuglady.network.fw.persistance.FlowContainer;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryEdgeEntity;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
 import io.github.nobuglady.network.fw.queue.complete.CompleteNodeResult;
+import io.github.nobuglady.network.fw.util.StringUtil;
 
 /**
  * 
@@ -78,28 +81,39 @@ public class FlowMarker {
 		// update next
 		if (edgeList != null && edgeList.size() > 0) {
 			for (HistoryEdgeEntity edge : edgeList) {
+
+				HistoryNodeEntity nodeFrom = nodeMap.get(edge.getFromNodeId());
 				HistoryNodeEntity nodeTo = nodeMap.get(edge.getToNodeId());
 
 				if (nodeTo == null) {
 					continue;
 				}
 
+				int edgeStatus = checkCondition(nodeFrom.getNodeStatusDetail(), nodeFrom.getReturnValue(),
+						edge.getEdgeCondition());
+				edge.setEdgeStatus(edgeStatus);
+				FlowContainer.updateEdgeStatusByKey(edge.getFlowId(), edge.getHistoryId(), edge.getEdgeId(),
+						edgeStatus);
+
 				boolean needWait = false;
 				boolean hasError = false;
+				boolean hasOk = false;
 				Map<String, List<HistoryEdgeEntity>> edgesBackMap = flow.getEdgesBackMap();
 				List<HistoryEdgeEntity> edgeBackList = edgesBackMap.get(nodeTo.getNodeId());
 				for (HistoryEdgeEntity flowEdgeBack : edgeBackList) {
-					HistoryNodeEntity nodeFrom = nodeMap.get(flowEdgeBack.getFromNodeId());
 
-					if (NodeStatusDetail.NONE == nodeFrom.getNodeStatusDetail()) {
+					if (EdgeStatus.INIT == flowEdgeBack.getEdgeStatus()) {
 
 						needWait = true;
-						break;
 
 					} else {
 
-						if (!(NodeStatusDetail.COMPLETE_SUCCESS == nodeFrom.getNodeStatusDetail())) {
+						if (EdgeStatus.ERROR == flowEdgeBack.getEdgeStatus()) {
 							hasError = true;
+						}
+
+						if (EdgeStatus.OK == flowEdgeBack.getEdgeStatus()) {
+							hasOk = true;
 						}
 
 					}
@@ -110,27 +124,78 @@ public class FlowMarker {
 					if (hasError) {
 						FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.INIT);
 					} else {
-						synchronized (FlowMarker.class) {
+						if (hasOk) {
+
 							HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId,
 									nodeTo.getNodeId(), historyId);
-							if (historyNodeEntity.getNodeStatus() != NodeStatus.READY) {
+							if (historyNodeEntity.getNodeStatus() == NodeStatus.WAIT
+									|| historyNodeEntity.getNodeStatus() == NodeStatus.INIT) {
 								FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
 										NodeStatus.READY);
 							} else {
 								return false;
 							}
+
+						} else {
+							// all ng, do nothing
 						}
 
 					}
 
 				} else {
-					FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.WAIT);
+
+					if (NodeReadyCheck.CHECK_SINGLE == nodeTo.getReadyCheck()) {
+						if (hasOk) {
+
+							HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId,
+									nodeTo.getNodeId(), historyId);
+							if (historyNodeEntity.getNodeStatus() == NodeStatus.WAIT
+									|| historyNodeEntity.getNodeStatus() == NodeStatus.INIT) {
+								FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
+										NodeStatus.READY);
+							} else {
+								return false;
+							}
+
+						} else {
+							FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
+									NodeStatus.WAIT);
+						}
+					} else {
+						FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.WAIT);
+					}
+
 				}
 
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * checkCondition
+	 * 
+	 * @param nodeStatusDetail nodeStatusDetail
+	 * @param returnValue      returnValue
+	 * @param edgeCondition    edgeCondition
+	 * @return edgeStatus
+	 */
+	private static int checkCondition(int nodeStatusDetail, int returnValue, String edgeCondition) {
+
+		if (!(NodeStatusDetail.COMPLETE_SUCCESS == nodeStatusDetail)) {
+			return EdgeStatus.ERROR;
+		}
+
+		if (StringUtil.isEmpty(edgeCondition)) {
+			return EdgeStatus.OK;
+		}
+
+		if (String.valueOf(returnValue).equals(edgeCondition)) {
+			return EdgeStatus.OK;
+		}
+
+		return EdgeStatus.NG;
 	}
 
 }

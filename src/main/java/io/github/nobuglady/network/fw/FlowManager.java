@@ -182,6 +182,7 @@ public class FlowManager {
 					nodeEntity.setFlowId(flowEntity.getFlowId());
 					nodeEntity.setNodeId(nodeDto.id);
 					nodeEntity.setNodeName(nodeDto.label);
+					nodeEntity.setReadyCheck(nodeDto.readyCheck);
 
 					flowEntityDB.nodeEntityList.add(nodeEntity);
 				}
@@ -194,6 +195,7 @@ public class FlowManager {
 					edgeEntity.setEdgeId(edgeDto.id);
 					edgeEntity.setFromNodeId(edgeDto.from);
 					edgeEntity.setToNodeId(edgeDto.to);
+					edgeEntity.setEdgeCondition(edgeDto.condition);
 					flowEntityDB.edgeEntityList.add(edgeEntity);
 				}
 

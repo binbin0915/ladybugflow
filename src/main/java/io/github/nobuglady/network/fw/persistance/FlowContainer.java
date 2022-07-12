@@ -230,6 +230,46 @@ public class FlowContainer {
 	}
 
 	/**
+	 * updateNodeReturnValueByNodeId
+	 * 
+	 * @param flowId      flowId
+	 * @param historyId   historyId
+	 * @param nodeId      nodeId
+	 * @param returnValue returnValue
+	 */
+	public static void updateNodeReturnValueByNodeId(String flowId, String historyId, String nodeId, int returnValue) {
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
+
+		if (flowEntity != null) {
+			for (HistoryNodeEntity nodeEntity : flowEntity.nodeEntityList) {
+				if (nodeEntity.getNodeId().equals(nodeId)) {
+					nodeEntity.setReturnValue(returnValue);
+				}
+			}
+		}
+	}
+
+	/**
+	 * updateEdgeStatusByKey
+	 * 
+	 * @param flowId     flowId
+	 * @param historyId  historyId
+	 * @param nodeId     edgeId
+	 * @param edgeStatus edgeStatus
+	 */
+	public static void updateEdgeStatusByKey(String flowId, String historyId, String edgeId, int edgeStatus) {
+		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
+
+		if (flowEntity != null) {
+			for (HistoryEdgeEntity edgeEntity : flowEntity.edgeEntityList) {
+				if (edgeEntity.getEdgeId().equals(edgeId)) {
+					edgeEntity.setEdgeStatus(edgeStatus);
+				}
+			}
+		}
+	}
+
+	/**
 	 * saveFlow
 	 * 
 	 * @param flowEntity flowEntity

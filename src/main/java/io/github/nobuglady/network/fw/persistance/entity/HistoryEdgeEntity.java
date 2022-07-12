@@ -30,6 +30,7 @@ public class HistoryEdgeEntity {
 	private int edgeExceptionReturnType;
 	private int skipFlag;
 	private String skipValue;
+	private int edgeStatus;
 	private int disableFlag;
 	private String createUser;
 	private String updateUser;
@@ -106,6 +107,14 @@ public class HistoryEdgeEntity {
 
 	public void setSkipValue(String skipValue) {
 		this.skipValue = skipValue;
+	}
+
+	public int getEdgeStatus() {
+		return edgeStatus;
+	}
+
+	public void setEdgeStatus(int edgeStatus) {
+		this.edgeStatus = edgeStatus;
 	}
 
 	public int getDisableFlag() {

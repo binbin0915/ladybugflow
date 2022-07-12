@@ -10,21 +10,22 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-package io.github.nobuglady.network.fw.model;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+package io.github.nobuglady.network.fw.constant;
 
 /**
  * 
  * @author NoBugLady
  *
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class EdgeDto {
+public class EdgeStatus {
 
-	public String id;
-	public String from;
-	public String to;
-	public String condition;
-	public String arrows;
+	/** init */
+	public static final int INIT = 0;
+	/** condition check error */
+	public static final int ERROR = -1;
+	/** condition check ok */
+	public static final int OK = 1;
+	/** condition check ng */
+	public static final int NG = 2;
+
 }

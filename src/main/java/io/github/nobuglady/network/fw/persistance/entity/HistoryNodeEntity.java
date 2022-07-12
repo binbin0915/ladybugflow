@@ -26,6 +26,7 @@ public class HistoryNodeEntity {
 	private String historyId;
 	private String nodeName;
 	private String refName;
+	private int readyCheck;
 	private int nodeType;
 	private int startType;
 	private int executeType;
@@ -38,6 +39,7 @@ public class HistoryNodeEntity {
 	private String skipValue;
 	private int nodeStatus;
 	private int nodeStatusDetail;
+	private int returnValue;
 	private Date startTime;
 	private Date finishTime;
 	private String nodeResultMessage;
@@ -85,6 +87,14 @@ public class HistoryNodeEntity {
 
 	public void setRefName(String refName) {
 		this.refName = refName;
+	}
+
+	public int getReadyCheck() {
+		return readyCheck;
+	}
+
+	public void setReadyCheck(int readyCheck) {
+		this.readyCheck = readyCheck;
 	}
 
 	public int getNodeType() {
@@ -181,6 +191,14 @@ public class HistoryNodeEntity {
 
 	public void setNodeStatusDetail(int nodeStatusDetail) {
 		this.nodeStatusDetail = nodeStatusDetail;
+	}
+
+	public int getReturnValue() {
+		return returnValue;
+	}
+
+	public void setReturnValue(int returnValue) {
+		this.returnValue = returnValue;
 	}
 
 	public Date getStartTime() {

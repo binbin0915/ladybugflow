@@ -86,6 +86,8 @@ public class NodeRunner implements Runnable {
 			int returnValue = flowRunner.execute(historyNodeEntity.getFlowId(), historyNodeEntity.getNodeId(),
 					historyNodeEntity.getHistoryId(), historyNodeEntity);
 
+			FlowContainer.updateNodeReturnValueByNodeId(flowId, historyId, nodeId, returnValue);
+
 			// complete
 			consoleLogger.debug(" [NODE COMPLETE][" + returnValue + "]" + historyNodeEntity.getNodeName());
 			FlowContainer.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE,

@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>nobuglady-network</title>
+<title>ladybugflow</title>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 
     <style type="text/css">
@@ -66,10 +66,37 @@
 	            </tr>
 	            <tr>
 	              <td></td>
+	              <td><label for="node-readyCheck">readyCheck</label></td>
+	              <td><input id="node-readyCheck" type="text" value="0" /></td>
+	            </tr>
+	            <tr>
+	              <td></td>
 	              <td>Action</td>
 	              <td>
 	                <button id="node-update" onclick="updateNode();">Update</button>
 	                <button id="node-remove" onclick="removeNode();">Remove</button>
+	              </td>
+	            </tr>
+	          </table>
+          	</div>
+          	<div id="edge-div" style="display:none">
+	          <table>
+	            <tr>
+	              <td></td>
+	              <td><label for="edge-id">Id</label></td>
+	              <td><input id="edge-id" type="text" value="6" disabled/></td>
+	            </tr>
+	            <tr>
+	              <td></td>
+	              <td><label for="edge-condition">Value</label></td>
+	              <td><input id="edge-condition" type="text" value="Edge 6" /></td>
+	            </tr>
+	            <tr>
+	              <td></td>
+	              <td>Action</td>
+	              <td>
+	                <button id="edge-update" onclick="updateEdge();">Update</button>
+	                <button id="edge-remove" onclick="removeEdge();">Remove</button>
 	              </td>
 	            </tr>
 	          </table>
@@ -98,7 +125,8 @@
 		nodes.forEach(element => jsonObj.nodes.push(
 				{
 					"id":element.id,
-					"label":element.label
+					"label":element.label,
+					"readyCheck":element.readyCheck,
 				}
 		));
 		
@@ -107,6 +135,7 @@
 					"id":element.id,
 					"from":element.from,
 					"to":element.to,
+					"condition":element.condition,
 					"arrows":element.arrows
 				}
 		));
@@ -120,6 +149,10 @@
 	        id: document.getElementById("node-id").value,
 	        label: document.getElementById("node-label").value,
 	      });
+	      nodes.update({
+	        id: document.getElementById("node-id").value,
+	        readyCheck: document.getElementById("node-readyCheck").value,
+	      });
 	    } catch (err) {
 	      alert(err);
 	    }
@@ -132,7 +165,26 @@
 	      alert(err);
 	    }
 	}
-	  
+	
+	function updateEdge() {
+	    try {
+	      edges.update({
+	        id: document.getElementById("edge-id").value,
+	        condition: document.getElementById("edge-condition").value,
+	      });
+	    } catch (err) {
+	      alert(err);
+	    }
+	}
+	
+	function removeEdge() {
+	    try {
+	      edges.remove({ id: document.getElementById("edge-id").value });
+	    } catch (err) {
+	      alert(err);
+	    }
+	}
+	
 	function showNetwork(){
 		var jsonObj = JSON.parse(document.getElementById("jsonTxt").value);
 	    // create an array with nodes
@@ -173,10 +225,33 @@
 				
 				document.getElementById("node-id").value = node.id;
 				document.getElementById("node-label").value = node.label;
+				if(node.readyCheck){
+					document.getElementById("node-readyCheck").value = node.readyCheck;
+				}
 				
+				document.getElementById("edge-div").style.display = "none"
 				document.getElementById("node-div").style.display = ""
 			}else{
 				document.getElementById("node-div").style.display = "none"
+				
+				if(params.edges && params.edges.length == 1){
+					
+					var edge = edges.get(params.edges[0]);
+					
+					document.getElementById("edge-id").value = edge.id;
+					if(edge.condition){
+						document.getElementById("edge-condition").value = edge.condition;
+					}else{
+						document.getElementById("edge-condition").value = "";
+					}
+					
+					
+					document.getElementById("edge-div").style.display = ""
+				}else{
+					
+					document.getElementById("edge-div").style.display = "none"
+
+				}
 			}
 	    });
 	}
