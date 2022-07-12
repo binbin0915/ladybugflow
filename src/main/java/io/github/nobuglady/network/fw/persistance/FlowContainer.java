@@ -254,7 +254,7 @@ public class FlowContainer {
 	 * 
 	 * @param flowId     flowId
 	 * @param historyId  historyId
-	 * @param nodeId     edgeId
+	 * @param edgeId     edgeId
 	 * @param edgeStatus edgeStatus
 	 */
 	public static void updateEdgeStatusByKey(String flowId, String historyId, String edgeId, int edgeStatus) {
