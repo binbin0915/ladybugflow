@@ -67,7 +67,10 @@
 	            <tr>
 	              <td></td>
 	              <td><label for="node-readyCheck">readyCheck</label></td>
-	              <td><input id="node-readyCheck" type="text" value="0" /></td>
+	              <td>
+	              		<input type="radio" id="node-readyCheck_0" name="node-readyCheck" value="0" checked>wait all edge ok</input>
+	              		<input type="radio" id="node-readyCheck_1" name="node-readyCheck" value="1"/>wait single edge ok</input>
+	              </td>
 	            </tr>
 	            <tr>
 	              <td></td>
@@ -151,7 +154,7 @@
 	      });
 	      nodes.update({
 	        id: document.getElementById("node-id").value,
-	        readyCheck: document.getElementById("node-readyCheck").value,
+	        readyCheck: getReadyCheck(),
 	      });
 	    } catch (err) {
 	      alert(err);
@@ -226,7 +229,9 @@
 				document.getElementById("node-id").value = node.id;
 				document.getElementById("node-label").value = node.label;
 				if(node.readyCheck){
-					document.getElementById("node-readyCheck").value = node.readyCheck;
+					setReadyCheck(node.readyCheck);
+				}else{
+					setReadyCheck(node.readyCheck);
 				}
 				
 				document.getElementById("edge-div").style.display = "none"
@@ -254,6 +259,22 @@
 				}
 			}
 	    });
+	}
+	
+	function setReadyCheck(readyCheck){
+		if(readyCheck == "1"){
+			document.getElementById("node-readyCheck_1").checked = true;
+		}else{
+			document.getElementById("node-readyCheck_0").checked = true;
+		}
+	}
+	
+	function getReadyCheck(){
+		if(document.getElementById("node-readyCheck_1").checked){
+			return 1;
+		}else{
+			return 0;
+		}
 	}
 	
 	showNetwork();
