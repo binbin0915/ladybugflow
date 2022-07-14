@@ -22,15 +22,19 @@ public class CompleteNodeResult {
 	private String flowId;
 	private String historyId;
 	private String nodeId;
+	private int nodeStatus;
+	private Integer nodeResult;
 
 	public CompleteNodeResult() {
 
 	}
 
-	public CompleteNodeResult(String flowId, String historyId, String nodeId) {
+	public CompleteNodeResult(String flowId, String historyId, String nodeId, int nodeStatus, Integer nodeResult) {
 		this.flowId = flowId;
 		this.historyId = historyId;
 		this.nodeId = nodeId;
+		this.nodeStatus = nodeStatus;
+		this.nodeResult = nodeResult;
 	}
 
 	public String getFlowId() {
@@ -55,6 +59,22 @@ public class CompleteNodeResult {
 
 	public void setNodeId(String nodeId) {
 		this.nodeId = nodeId;
+	}
+
+	public int getNodeStatus() {
+		return nodeStatus;
+	}
+
+	public void setNodeStatus(int nodeStatus) {
+		this.nodeStatus = nodeStatus;
+	}
+
+	public Integer getNodeResult() {
+		return nodeResult;
+	}
+
+	public void setNodeResult(Integer nodeResult) {
+		this.nodeResult = nodeResult;
 	}
 
 }

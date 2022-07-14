@@ -13,9 +13,9 @@
 package io.github.nobuglady.network.fw.starter;
 
 import io.github.nobuglady.network.fw.executor.NodePool;
-import io.github.nobuglady.network.fw.executor.ReadyQueueConsumerThread;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
 import io.github.nobuglady.network.fw.queue.CompleteQueueConsumerThread;
+import io.github.nobuglady.network.fw.queue.ReadyQueueConsumerThread;
 
 /**
  * 

@@ -56,8 +56,12 @@ public class FlowRunner {
 				if (node != null) {
 					if (node.id().equals(nodeId) || node.label().equals(nodeName)) {
 						try {
-							method.invoke(this);
-							return 0;
+							Object rtnObj = method.invoke(this);
+							if (rtnObj instanceof Integer) {
+								return (Integer) rtnObj;
+							} else {
+								return 0;
+							}
 						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 							e.printStackTrace();
 							throw e;

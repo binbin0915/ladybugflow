@@ -10,8 +10,9 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-package io.github.nobuglady.network.fw.executor;
+package io.github.nobuglady.network.fw.queue;
 
+import io.github.nobuglady.network.fw.executor.NodePool;
 import io.github.nobuglady.network.fw.queue.ready.ReadyNodeResult;
 import io.github.nobuglady.network.fw.queue.ready.ReadyQueueManager;
 

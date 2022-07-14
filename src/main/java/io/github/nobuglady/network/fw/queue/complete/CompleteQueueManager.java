@@ -53,13 +53,15 @@ public class CompleteQueueManager {
 	/**
 	 * putCompleteNode
 	 * 
-	 * @param flowId    flowId
-	 * @param historyId historyId
-	 * @param nodeId    nodeId
+	 * @param flowId     flowId
+	 * @param historyId  historyId
+	 * @param nodeId     nodeId
+	 * @param nodeStatus nodeStatus
+	 * @param nodeResult nodeResult
 	 */
-	public void putCompleteNode(String flowId, String historyId, String nodeId) {
+	public void putCompleteNode(String flowId, String historyId, String nodeId, int nodeStatus, Integer nodeResult) {
 		try {
-			nodeCompleteQueue.put(new CompleteNodeResult(flowId, historyId, nodeId));
+			nodeCompleteQueue.put(new CompleteNodeResult(flowId, historyId, nodeId, nodeStatus, nodeResult));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

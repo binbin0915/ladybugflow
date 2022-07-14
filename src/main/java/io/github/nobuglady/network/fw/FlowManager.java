@@ -275,6 +275,7 @@ public class FlowManager {
 	 */
 	private static void startNode(String flowId, String historyId, String nodeId) {
 
+		FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.RUNNING);
 		ReadyQueueManager.getInstance().putReadyNode(flowId, historyId, nodeId);
 	}
 
