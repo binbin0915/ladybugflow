@@ -41,7 +41,8 @@ public class FlowRunner {
 	 * @return execute result
 	 * @throws Exception Exception
 	 */
-	public int execute(String flowId, String nodeId, String historyId, HistoryNodeEntity nodeEntity) throws Exception {
+	public String execute(String flowId, String nodeId, String historyId, HistoryNodeEntity nodeEntity)
+			throws Exception {
 
 		ConsoleLogger logger = ConsoleLogger.getInstance(flowId, historyId);
 
@@ -57,10 +58,10 @@ public class FlowRunner {
 					if (node.id().equals(nodeId) || node.label().equals(nodeName)) {
 						try {
 							Object rtnObj = method.invoke(this);
-							if (rtnObj instanceof Integer) {
-								return (Integer) rtnObj;
+							if (rtnObj != null) {
+								return rtnObj.toString();
 							} else {
-								return 0;
+								return null;
 							}
 						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 							e.printStackTrace();
@@ -70,7 +71,7 @@ public class FlowRunner {
 				}
 			}
 		}
-		return 0;
+		return null;
 
 	}
 

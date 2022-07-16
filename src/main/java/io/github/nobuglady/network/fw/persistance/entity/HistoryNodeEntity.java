@@ -39,7 +39,7 @@ public class HistoryNodeEntity {
 	private String skipValue;
 	private int nodeStatus;
 	private int nodeStatusDetail;
-	private int returnValue;
+	private String returnValue;
 	private Date startTime;
 	private Date finishTime;
 	private String nodeResultMessage;
@@ -193,11 +193,11 @@ public class HistoryNodeEntity {
 		this.nodeStatusDetail = nodeStatusDetail;
 	}
 
-	public int getReturnValue() {
+	public String getReturnValue() {
 		return returnValue;
 	}
 
-	public void setReturnValue(int returnValue) {
+	public void setReturnValue(String returnValue) {
 		this.returnValue = returnValue;
 	}
 

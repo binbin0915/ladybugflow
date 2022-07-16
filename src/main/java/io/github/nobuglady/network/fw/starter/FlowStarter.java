@@ -12,10 +12,16 @@
  */
 package io.github.nobuglady.network.fw.starter;
 
+import java.io.IOException;
+import java.util.Properties;
+
 import io.github.nobuglady.network.fw.executor.NodePool;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
 import io.github.nobuglady.network.fw.queue.CompleteQueueConsumerThread;
 import io.github.nobuglady.network.fw.queue.ReadyQueueConsumerThread;
+import io.github.nobuglady.network.fw.queue.complete.ICompleteQueue;
+import io.github.nobuglady.network.fw.queue.ready.IReadyQueue;
+import io.github.nobuglady.network.fw.util.StringUtil;
 
 /**
  * 
@@ -27,16 +33,60 @@ public class FlowStarter {
 	private static ReadyQueueConsumerThread readyQueueConsumerThread;
 	private static CompleteQueueConsumerThread completeQueueConsumerThread;
 
+	public static IReadyQueue readyQueue;
+	public static ICompleteQueue completeQueue;
+
 	private static ConsoleLogger logger = ConsoleLogger.getInstance();
 
 	static {
-		readyQueueConsumerThread = new ReadyQueueConsumerThread(new NodePool());
-		readyQueueConsumerThread.start();
-		logger.info("Ready queue thread started.");
 
-		completeQueueConsumerThread = new CompleteQueueConsumerThread();
-		completeQueueConsumerThread.start();
-		logger.info("Complete queue thread started.");
+		boolean nodeRemote = false;
+		String readyQueueClassName = "io.github.nobuglady.network.fw.queue.ready.ReadyQueueManager";
+		String completeQueueClassName = "io.github.nobuglady.network.fw.queue.complete.CompleteQueueManager";
+
+		Properties prop = new Properties();
+		try {
+			prop.load(FlowStarter.class.getClassLoader().getResourceAsStream("ladybugflow.properties"));
+		} catch (IOException | NullPointerException e) {
+			logger.info("ladybugflow.properties in root path not found, use default configuration");
+		}
+
+		if (prop != null) {
+			String readyQueueClassNameStr = prop.getProperty("queue.ready.manager");
+			String completeQueueClassNameStr = prop.getProperty("queue.complete.manager");
+			String nodeRemoteStr = prop.getProperty("node.remote");
+
+			if (StringUtil.isNotEmpty(readyQueueClassNameStr)) {
+				readyQueueClassName = readyQueueClassNameStr;
+			}
+			if (StringUtil.isNotEmpty(completeQueueClassNameStr)) {
+				completeQueueClassName = completeQueueClassNameStr;
+			}
+
+			if (StringUtil.isNotEmpty(nodeRemoteStr)) {
+				nodeRemote = Boolean.valueOf(nodeRemoteStr);
+			}
+		}
+
+		try {
+
+			readyQueue = (IReadyQueue) Class.forName(readyQueueClassName).newInstance();
+			completeQueue = (ICompleteQueue) Class.forName(completeQueueClassName).newInstance();
+
+			if (!nodeRemote) {
+				readyQueueConsumerThread = new ReadyQueueConsumerThread(readyQueue, new NodePool());
+				readyQueueConsumerThread.start();
+				logger.info("Ready queue thread started.");
+			}
+
+			completeQueueConsumerThread = new CompleteQueueConsumerThread(completeQueue);
+			completeQueueConsumerThread.start();
+			logger.info("Complete queue thread started.");
+
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public static void shutdown() {

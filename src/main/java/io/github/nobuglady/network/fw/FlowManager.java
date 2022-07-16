@@ -36,7 +36,7 @@ import io.github.nobuglady.network.fw.persistance.entity.HistoryEdgeEntity;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryFlowEntity;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
 import io.github.nobuglady.network.fw.queue.complete.CompleteNodeResult;
-import io.github.nobuglady.network.fw.queue.ready.ReadyQueueManager;
+import io.github.nobuglady.network.fw.starter.FlowStarter;
 import io.github.nobuglady.network.fw.util.FlowUtil;
 
 /**
@@ -276,7 +276,7 @@ public class FlowManager {
 	private static void startNode(String flowId, String historyId, String nodeId) {
 
 		FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.RUNNING);
-		ReadyQueueManager.getInstance().putReadyNode(flowId, historyId, nodeId);
+		FlowStarter.readyQueue.putReadyNode(flowId, historyId, nodeId);
 	}
 
 	/**

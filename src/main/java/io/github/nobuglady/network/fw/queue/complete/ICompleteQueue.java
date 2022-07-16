@@ -12,17 +12,12 @@
  */
 package io.github.nobuglady.network.fw.queue.complete;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 /**
  * 
  * @author NoBugLady
  *
  */
-public class CompleteQueueManager implements ICompleteQueue {
-
-	private BlockingQueue<CompleteNodeResult> nodeCompleteQueue = new LinkedBlockingQueue<CompleteNodeResult>();
+public interface ICompleteQueue {
 
 	/**
 	 * 
@@ -31,9 +26,7 @@ public class CompleteQueueManager implements ICompleteQueue {
 	 * @return CompleteNodeResult
 	 * @throws InterruptedException InterruptedException
 	 */
-	public CompleteNodeResult takeCompleteNode() throws InterruptedException {
-		return nodeCompleteQueue.take();
-	}
+	public CompleteNodeResult takeCompleteNode() throws InterruptedException;
 
 	/**
 	 * putCompleteNode
@@ -44,12 +37,5 @@ public class CompleteQueueManager implements ICompleteQueue {
 	 * @param nodeStatus nodeStatus
 	 * @param nodeResult nodeResult
 	 */
-	public void putCompleteNode(String flowId, String historyId, String nodeId, int nodeStatus, String nodeResult) {
-		try {
-			nodeCompleteQueue.put(new CompleteNodeResult(flowId, historyId, nodeId, nodeStatus, nodeResult));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
+	public void putCompleteNode(String flowId, String historyId, String nodeId, int nodeStatus, String nodeResult);
 }

@@ -14,7 +14,7 @@ package io.github.nobuglady.network.fw.queue;
 
 import io.github.nobuglady.network.fw.FlowManager;
 import io.github.nobuglady.network.fw.queue.complete.CompleteNodeResult;
-import io.github.nobuglady.network.fw.queue.complete.CompleteQueueManager;
+import io.github.nobuglady.network.fw.queue.complete.ICompleteQueue;
 
 /**
  * 
@@ -25,6 +25,17 @@ public class CompleteQueueConsumerThread extends Thread {
 
 	private volatile boolean stopFlag = false;
 
+	private ICompleteQueue completeQueue;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param completeQueue completeQueue
+	 */
+	public CompleteQueueConsumerThread(ICompleteQueue completeQueue) {
+		this.completeQueue = completeQueue;
+	}
+
 	/**
 	 * run
 	 */
@@ -32,8 +43,12 @@ public class CompleteQueueConsumerThread extends Thread {
 
 		while (!this.stopFlag) {
 			try {
-				CompleteNodeResult nodeResult = CompleteQueueManager.getInstance().takeCompleteNode();
-				FlowManager.onNodeComplete(nodeResult);
+				CompleteNodeResult nodeResult = completeQueue.takeCompleteNode();
+				if (nodeResult != null) {
+					FlowManager.onNodeComplete(nodeResult);
+				} else {
+					Thread.sleep(100);
+				}
 			} catch (InterruptedException e) {
 				if (!this.stopFlag) {
 					e.printStackTrace();

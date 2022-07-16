@@ -237,7 +237,8 @@ public class FlowContainer {
 	 * @param nodeId      nodeId
 	 * @param returnValue returnValue
 	 */
-	public static void updateNodeReturnValueByNodeId(String flowId, String historyId, String nodeId, int returnValue) {
+	public static void updateNodeReturnValueByNodeId(String flowId, String historyId, String nodeId,
+			String returnValue) {
 		FlowEntity flowEntity = FlowContainer.getFlowEntityByKey(flowId, historyId);
 
 		if (flowEntity != null) {

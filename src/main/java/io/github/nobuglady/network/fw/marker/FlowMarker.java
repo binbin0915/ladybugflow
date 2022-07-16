@@ -48,7 +48,7 @@ public class FlowMarker {
 		String historyId = nodeResult.getHistoryId();
 		String nodeId = nodeResult.getNodeId();
 		int nodeStatusDetail = nodeResult.getNodeStatus();
-		Integer returnValue = nodeResult.getNodeResult();
+		String returnValue = nodeResult.getNodeResult();
 
 		if (returnValue != null) {
 			FlowContainer.updateNodeReturnValueByNodeId(flowId, historyId, nodeId, returnValue);
@@ -188,7 +188,7 @@ public class FlowMarker {
 	 * @param edgeCondition    edgeCondition
 	 * @return edgeStatus
 	 */
-	private static int checkCondition(int nodeStatusDetail, int returnValue, String edgeCondition) {
+	private static int checkCondition(int nodeStatusDetail, String returnValue, String edgeCondition) {
 
 		if (!(NodeStatusDetail.COMPLETE_SUCCESS == nodeStatusDetail)) {
 			return EdgeStatus.ERROR;

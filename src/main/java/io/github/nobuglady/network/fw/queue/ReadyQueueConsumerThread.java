@@ -13,8 +13,8 @@
 package io.github.nobuglady.network.fw.queue;
 
 import io.github.nobuglady.network.fw.executor.NodePool;
+import io.github.nobuglady.network.fw.queue.ready.IReadyQueue;
 import io.github.nobuglady.network.fw.queue.ready.ReadyNodeResult;
-import io.github.nobuglady.network.fw.queue.ready.ReadyQueueManager;
 
 /**
  * 
@@ -27,12 +27,16 @@ public class ReadyQueueConsumerThread extends Thread {
 
 	private NodePool nodePool;
 
+	private IReadyQueue readyQueue;
+
 	/**
 	 * Constructor
 	 * 
-	 * @param nodePool nodePool
+	 * @param readyQueue readyQueue
+	 * @param nodePool   nodePool
 	 */
-	public ReadyQueueConsumerThread(NodePool nodePool) {
+	public ReadyQueueConsumerThread(IReadyQueue readyQueue, NodePool nodePool) {
+		this.readyQueue = readyQueue;
 		this.nodePool = nodePool;
 	}
 
@@ -43,8 +47,12 @@ public class ReadyQueueConsumerThread extends Thread {
 
 		while (!this.stopFlag) {
 			try {
-				ReadyNodeResult nodeResult = ReadyQueueManager.getInstance().takeCompleteNode();
-				nodePool.onNodeReady(nodeResult);
+				ReadyNodeResult nodeResult = readyQueue.takeCompleteNode();
+				if (nodeResult != null) {
+					nodePool.onNodeReady(nodeResult);
+				} else {
+					Thread.sleep(100);
+				}
 			} catch (InterruptedException e) {
 				if (!this.stopFlag) {
 					e.printStackTrace();

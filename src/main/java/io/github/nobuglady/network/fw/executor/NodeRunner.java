@@ -19,7 +19,7 @@ import io.github.nobuglady.network.fw.constant.NodeStatusDetail;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
 import io.github.nobuglady.network.fw.persistance.FlowContainer;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
-import io.github.nobuglady.network.fw.queue.complete.CompleteQueueManager;
+import io.github.nobuglady.network.fw.starter.FlowStarter;
 
 /**
  * 
@@ -68,28 +68,27 @@ public class NodeRunner implements Runnable {
 			// run
 			FlowRunner flowRunner = FlowContainer.flowRunnerMap.get(flowId + "," + historyId);
 			consoleLogger.debug(" [NODE RUNNING]" + historyNodeEntity.getNodeName());
-			int returnValue = flowRunner.execute(historyNodeEntity.getFlowId(), historyNodeEntity.getNodeId(),
+			String returnValue = flowRunner.execute(historyNodeEntity.getFlowId(), historyNodeEntity.getNodeId(),
 					historyNodeEntity.getHistoryId(), historyNodeEntity);
 
 			// complete
 			consoleLogger.debug(" [NODE COMPLETE][" + returnValue + "]" + historyNodeEntity.getNodeName());
 
-			CompleteQueueManager.getInstance().putCompleteNode(flowId, historyId, nodeId,
-					NodeStatusDetail.COMPLETE_SUCCESS, returnValue);
+			FlowStarter.completeQueue.putCompleteNode(flowId, historyId, nodeId, NodeStatusDetail.COMPLETE_SUCCESS,
+					returnValue);
 
 		} catch (CancellationException e) {
 
 			consoleLogger.error(" [NODE CANCEL]" + nodeName, e);
-			CompleteQueueManager.getInstance().putCompleteNode(flowId, historyId, nodeId,
-					NodeStatusDetail.COMPLETE_CANCEL, null);
+			FlowStarter.completeQueue.putCompleteNode(flowId, historyId, nodeId, NodeStatusDetail.COMPLETE_CANCEL,
+					null);
 
 		} catch (Throwable e) {
 
 			e.printStackTrace();
 
 			consoleLogger.error(" [NODE ERROR]" + nodeName, e);
-			CompleteQueueManager.getInstance().putCompleteNode(flowId, historyId, nodeId,
-					NodeStatusDetail.COMPLETE_ERROR, null);
+			FlowStarter.completeQueue.putCompleteNode(flowId, historyId, nodeId, NodeStatusDetail.COMPLETE_ERROR, null);
 
 		} finally {
 
