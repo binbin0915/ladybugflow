@@ -176,8 +176,7 @@ json:
 ```
 </details>
 
-After the process is ended, you can get the execution result json in the last line.
-Paste json to the following location can check the status of the flow. 
+流程运行结束后，会输出描述流程状态的json字符串，可以把它粘贴到图形化工具里查看流程的运行状态。
 (green:success, red:error, white:waiting).
 
 <img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/2.gif?raw=true" alt="" width="250px"/>
