@@ -14,14 +14,14 @@
 <dependency>
     <groupId>io.github.nobuglady</groupId>
     <artifactId>ladybugflow</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
 </dependency>
 ```
 
 ##### Gradle
 ```
 // https://mvnrepository.com/artifact/io.github.nobuglady/ladybugflow
-implementation 'io.github.nobuglady:ladybugflow:0.0.3'
+implementation 'io.github.nobuglady:ladybugflow:0.0.4'
 ```
 #### 1.2. 程序配置
 
