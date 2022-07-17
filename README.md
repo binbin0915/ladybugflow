@@ -3,9 +3,9 @@
 ![](https://img.shields.io/badge/license-Apache2.0-yellow)
 ![](https://img.shields.io/badge/Java-1.8-orange)
 
-### 1. Usage
+### 1. 使用方法
 
-#### 1.1. Import
+#### 1.1. 导入依赖
 
 ##### Maven
 
@@ -14,18 +14,18 @@
 <dependency>
     <groupId>io.github.nobuglady</groupId>
     <artifactId>ladybugflow</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 
 ##### Gradle
 ```
 // https://mvnrepository.com/artifact/io.github.nobuglady/ladybugflow
-implementation 'io.github.nobuglady:ladybugflow:0.0.2'
+implementation 'io.github.nobuglady:ladybugflow:0.0.3'
 ```
-#### 1.2. Configuration
+#### 1.2. 程序配置
 
-You need to make a class that extends from FlowRunner, and a configuration file of flow, which is placed in the same directory.
+您需要写一个类继承自FlowRunner，和一个描述Flow流程的json文件，这两个文件需要放在相同的包下面
 
 ```
 src/main/java
@@ -122,35 +122,34 @@ public class MyFlow1 extends FlowRunner {
 
 </details>
 
-#### 1.3. Create json by UI
-We have a GUI tool which can create the flow json file by UI, In project folder "/html/network.html"
+#### 1.3. 图形工具
+有一个图形工具可以帮助您生成Flow描述的json文件。
 
-Drawing flow
+画流程图
 <img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/4.gif?raw=true" alt="" width="250px"/>
 
-Generate json
+将流程图转化成json
 <img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/5.gif?raw=true" alt="" width="250px"/>
 
-#### 1.4. Start
-Then start the flow with the following code.
+#### 1.4. 启动
+通过下面的代码可以启动您定义的flow
 ```
 MyFlow1 myFlow1 =  new MyFlow1();
 myFlow1.startFlow();
 ```
-#### 1.5. Shutdown
-When the system shutdown, close the flow manager by the following code
-
+#### 1.5. 停止
+系统停止的时候需要调用下面的代码来停止flow管理系统
 ```
 FlowStarter.shutdown();
 ```
 
-### 2. Run
+### 2. 运行结果
 
-#### 2.1. Success log
+#### 2.1. 成功日志
 
 
 <details>
-<summary>The success log is as follows</summary>
+<summary>下面是运行成功的日志文件</summary>
 
 ```
 Ready queue thread started.
@@ -181,11 +180,11 @@ Paste json to the following location can check the status of the flow.
 
 <img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/2.gif?raw=true" alt="" width="250px"/>
 
-#### 2.2. Error log
+#### 2.2. 错误日志
 
 
 <details>
-<summary>The error log is as follows</summary>
+<summary>下面是运行错误的日志文件</summary>
 
 ```
 Ready queue thread started.
@@ -238,8 +237,7 @@ json:
 
 </details>
 
-After the process is ended, you can get the execution result json in the last line.
-Paste json to the following location can check the status of the flow. 
+流程运行结束后，会输出描述流程状态的json字符串，可以把它粘贴到图形化工具里查看流程的运行状态。
 (green:success, red:error, white:waiting).
 
 <img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/3.gif?raw=true" alt="" width="250px"/>
