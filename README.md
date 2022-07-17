@@ -126,9 +126,11 @@ public class MyFlow1 extends FlowRunner {
 有一个图形工具可以帮助您生成Flow描述的json文件。
 
 画流程图
+
 <img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/4.gif?raw=true" alt="" width="250px"/>
 
 将流程图转化成json
+
 <img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/5.gif?raw=true" alt="" width="250px"/>
 
 #### 1.4. 启动
