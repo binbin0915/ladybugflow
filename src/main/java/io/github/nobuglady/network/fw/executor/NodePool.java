@@ -23,7 +23,7 @@ import io.github.nobuglady.network.fw.queue.ready.ReadyNodeResult;
  * @author NoBugLady
  *
  */
-public class NodePool {
+public class NodePool implements INodeExecutor {
 
 	public static ExecutorService nodePool = Executors.newCachedThreadPool();
 
@@ -36,16 +36,20 @@ public class NodePool {
 	/**
 	 * onNodeReady
 	 * 
-	 * @param nodeResult nodeResult
+	 * @param readyNodeResult readyNodeResult
 	 */
-	public void onNodeReady(ReadyNodeResult nodeResult) {
+	public void onNodeReady(ReadyNodeResult readyNodeResult) {
 
-		String flowId = nodeResult.getFlowId();
-		String historyId = nodeResult.getHistoryId();
-		String nodeId = nodeResult.getNodeId();
-
-		NodeRunner nodeRunner = new NodeRunner(flowId, historyId, nodeId);
+		NodeRunner nodeRunner = new NodeRunner(readyNodeResult.getFlowId(), readyNodeResult.getHistoryId(),
+				readyNodeResult.getNodeId());
 
 		nodePool.submit(nodeRunner);
+	}
+
+	/**
+	 * shutdown
+	 */
+	public void shutdown() {
+		nodePool.shutdown();
 	}
 }

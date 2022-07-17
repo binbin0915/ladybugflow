@@ -15,6 +15,9 @@ package io.github.nobuglady.network.fw.queue.complete;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import io.github.nobuglady.network.fw.INodeCompleteListener;
+import io.github.nobuglady.network.fw.queue.CompleteQueueConsumerThread;
+
 /**
  * 
  * @author NoBugLady
@@ -23,6 +26,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class CompleteQueueManager implements ICompleteQueue {
 
 	private BlockingQueue<CompleteNodeResult> nodeCompleteQueue = new LinkedBlockingQueue<CompleteNodeResult>();
+
+	private CompleteQueueConsumerThread completeQueueConsumerThread;
 
 	/**
 	 * 
@@ -50,6 +55,24 @@ public class CompleteQueueManager implements ICompleteQueue {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * startConsumerThread
+	 * 
+	 * @param INodeCompleteListener nodeCompleteListener
+	 * @throws InterruptedException InterruptedException
+	 */
+	public void startConsumerThread(INodeCompleteListener nodeCompleteListener) {
+		completeQueueConsumerThread = new CompleteQueueConsumerThread(this, nodeCompleteListener);
+		completeQueueConsumerThread.start();
+	}
+
+	/**
+	 * shutdown
+	 */
+	public void shutdown() {
+		completeQueueConsumerThread.shutdown();
 	}
 
 }

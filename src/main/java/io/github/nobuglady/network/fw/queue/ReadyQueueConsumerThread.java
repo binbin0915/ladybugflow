@@ -12,9 +12,9 @@
  */
 package io.github.nobuglady.network.fw.queue;
 
-import io.github.nobuglady.network.fw.executor.NodePool;
-import io.github.nobuglady.network.fw.queue.ready.IReadyQueue;
+import io.github.nobuglady.network.fw.executor.INodeExecutor;
 import io.github.nobuglady.network.fw.queue.ready.ReadyNodeResult;
+import io.github.nobuglady.network.fw.queue.ready.ReadyQueueManager;
 
 /**
  * 
@@ -25,9 +25,9 @@ public class ReadyQueueConsumerThread extends Thread {
 
 	private volatile boolean stopFlag = false;
 
-	private NodePool nodePool;
+	private INodeExecutor nodePool;
 
-	private IReadyQueue readyQueue;
+	private ReadyQueueManager readyQueue;
 
 	/**
 	 * Constructor
@@ -35,7 +35,7 @@ public class ReadyQueueConsumerThread extends Thread {
 	 * @param readyQueue readyQueue
 	 * @param nodePool   nodePool
 	 */
-	public ReadyQueueConsumerThread(IReadyQueue readyQueue, NodePool nodePool) {
+	public ReadyQueueConsumerThread(ReadyQueueManager readyQueue, INodeExecutor nodePool) {
 		this.readyQueue = readyQueue;
 		this.nodePool = nodePool;
 	}
@@ -47,7 +47,7 @@ public class ReadyQueueConsumerThread extends Thread {
 
 		while (!this.stopFlag) {
 			try {
-				ReadyNodeResult nodeResult = readyQueue.takeCompleteNode();
+				ReadyNodeResult nodeResult = readyQueue.takeReadyNode();
 				if (nodeResult != null) {
 					nodePool.onNodeReady(nodeResult);
 				} else {

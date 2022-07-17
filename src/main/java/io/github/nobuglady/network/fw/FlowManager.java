@@ -44,14 +44,14 @@ import io.github.nobuglady.network.fw.util.FlowUtil;
  * @author NoBugLady
  *
  */
-public class FlowManager {
+public class FlowManager implements INodeCompleteListener {
 
 	/**
 	 * onNodeComplete
 	 * 
 	 * @param nodeResult nodeResult
 	 */
-	public static void onNodeComplete(CompleteNodeResult nodeResult) {
+	public void onNodeComplete(CompleteNodeResult nodeResult) {
 
 		String flowId = nodeResult.getFlowId();
 		String historyId = nodeResult.getHistoryId();

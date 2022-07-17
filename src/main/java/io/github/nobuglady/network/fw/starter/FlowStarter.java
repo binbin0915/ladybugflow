@@ -15,10 +15,9 @@ package io.github.nobuglady.network.fw.starter;
 import java.io.IOException;
 import java.util.Properties;
 
-import io.github.nobuglady.network.fw.executor.NodePool;
+import io.github.nobuglady.network.fw.FlowManager;
+import io.github.nobuglady.network.fw.executor.INodeExecutor;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
-import io.github.nobuglady.network.fw.queue.CompleteQueueConsumerThread;
-import io.github.nobuglady.network.fw.queue.ReadyQueueConsumerThread;
 import io.github.nobuglady.network.fw.queue.complete.ICompleteQueue;
 import io.github.nobuglady.network.fw.queue.ready.IReadyQueue;
 import io.github.nobuglady.network.fw.util.StringUtil;
@@ -30,19 +29,20 @@ import io.github.nobuglady.network.fw.util.StringUtil;
  */
 public class FlowStarter {
 
-	private static ReadyQueueConsumerThread readyQueueConsumerThread;
-	private static CompleteQueueConsumerThread completeQueueConsumerThread;
-
 	public static IReadyQueue readyQueue;
 	public static ICompleteQueue completeQueue;
+	public static INodeExecutor nodeExecutor;
+	public static boolean nodeExecutorRemote = false;
 
 	private static ConsoleLogger logger = ConsoleLogger.getInstance();
 
 	static {
 
-		boolean nodeRemote = false;
 		String readyQueueClassName = "io.github.nobuglady.network.fw.queue.ready.ReadyQueueManager";
 		String completeQueueClassName = "io.github.nobuglady.network.fw.queue.complete.CompleteQueueManager";
+		String nodeExecutorClassName = "io.github.nobuglady.network.fw.executor.NodePool";
+
+		nodeExecutorRemote = false;
 
 		Properties prop = new Properties();
 		try {
@@ -54,7 +54,8 @@ public class FlowStarter {
 		if (prop != null) {
 			String readyQueueClassNameStr = prop.getProperty("queue.ready.manager");
 			String completeQueueClassNameStr = prop.getProperty("queue.complete.manager");
-			String nodeRemoteStr = prop.getProperty("node.remote");
+			String nodeExecutorClassNameStr = prop.getProperty("node.executor");
+			String nodeExecutorRemoteStr = prop.getProperty("node.executor.remote");
 
 			if (StringUtil.isNotEmpty(readyQueueClassNameStr)) {
 				readyQueueClassName = readyQueueClassNameStr;
@@ -62,9 +63,11 @@ public class FlowStarter {
 			if (StringUtil.isNotEmpty(completeQueueClassNameStr)) {
 				completeQueueClassName = completeQueueClassNameStr;
 			}
-
-			if (StringUtil.isNotEmpty(nodeRemoteStr)) {
-				nodeRemote = Boolean.valueOf(nodeRemoteStr);
+			if (StringUtil.isNotEmpty(nodeExecutorClassNameStr)) {
+				nodeExecutorClassName = nodeExecutorClassNameStr;
+			}
+			if (StringUtil.isNotEmpty(nodeExecutorRemoteStr)) {
+				nodeExecutorRemote = Boolean.valueOf(nodeExecutorRemoteStr);
 			}
 		}
 
@@ -73,15 +76,14 @@ public class FlowStarter {
 			readyQueue = (IReadyQueue) Class.forName(readyQueueClassName).newInstance();
 			completeQueue = (ICompleteQueue) Class.forName(completeQueueClassName).newInstance();
 
-			if (!nodeRemote) {
-				readyQueueConsumerThread = new ReadyQueueConsumerThread(readyQueue, new NodePool());
-				readyQueueConsumerThread.start();
-				logger.info("Ready queue thread started.");
+			if (!nodeExecutorRemote) {
+				nodeExecutor = (INodeExecutor) Class.forName(nodeExecutorClassName).newInstance();
+				readyQueue.startConsumerThread(nodeExecutor);
+				logger.info("Ready queue consumer thread started.");
 			}
 
-			completeQueueConsumerThread = new CompleteQueueConsumerThread(completeQueue);
-			completeQueueConsumerThread.start();
-			logger.info("Complete queue thread started.");
+			completeQueue.startConsumerThread(new FlowManager());
+			logger.info("Complete queue consumer thread started.");
 
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -90,13 +92,17 @@ public class FlowStarter {
 	}
 
 	public static void shutdown() {
-		readyQueueConsumerThread.shutdown();
+		if (!nodeExecutorRemote) {
+			readyQueue.shutdown();
+			logger.info("Ready queue thread stoped.");
+		}
+
+		completeQueue.shutdown();
 		logger.info("Ready queue thread stoped.");
 
-		completeQueueConsumerThread.shutdown();
-		logger.info("Ready queue thread stoped.");
-
-		NodePool.nodePool.shutdown();
-		logger.info("NodePool stoped.");
+		if (nodeExecutor != null) {
+			nodeExecutor.shutdown();
+			logger.info("NodePool stoped.");
+		}
 	}
 }

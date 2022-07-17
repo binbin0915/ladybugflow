@@ -12,9 +12,9 @@
  */
 package io.github.nobuglady.network.fw.queue;
 
-import io.github.nobuglady.network.fw.FlowManager;
+import io.github.nobuglady.network.fw.INodeCompleteListener;
 import io.github.nobuglady.network.fw.queue.complete.CompleteNodeResult;
-import io.github.nobuglady.network.fw.queue.complete.ICompleteQueue;
+import io.github.nobuglady.network.fw.queue.complete.CompleteQueueManager;
 
 /**
  * 
@@ -25,15 +25,18 @@ public class CompleteQueueConsumerThread extends Thread {
 
 	private volatile boolean stopFlag = false;
 
-	private ICompleteQueue completeQueue;
+	private CompleteQueueManager completeQueue;
+	private INodeCompleteListener nodeCompleteListener;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param completeQueue completeQueue
+	 * @param completeQueue        completeQueue
+	 * @param nodeCompleteListener nodeCompleteListener
 	 */
-	public CompleteQueueConsumerThread(ICompleteQueue completeQueue) {
+	public CompleteQueueConsumerThread(CompleteQueueManager completeQueue, INodeCompleteListener nodeCompleteListener) {
 		this.completeQueue = completeQueue;
+		this.nodeCompleteListener = nodeCompleteListener;
 	}
 
 	/**
@@ -45,7 +48,7 @@ public class CompleteQueueConsumerThread extends Thread {
 			try {
 				CompleteNodeResult nodeResult = completeQueue.takeCompleteNode();
 				if (nodeResult != null) {
-					FlowManager.onNodeComplete(nodeResult);
+					nodeCompleteListener.onNodeComplete(nodeResult);
 				} else {
 					Thread.sleep(100);
 				}

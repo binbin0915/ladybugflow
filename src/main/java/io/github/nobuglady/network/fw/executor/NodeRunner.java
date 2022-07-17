@@ -63,6 +63,9 @@ public class NodeRunner implements Runnable {
 		try {
 
 			HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId, nodeId, historyId);
+			if (historyNodeEntity == null) {
+				return;
+			}
 			nodeName = historyNodeEntity.getNodeName();
 
 			// run

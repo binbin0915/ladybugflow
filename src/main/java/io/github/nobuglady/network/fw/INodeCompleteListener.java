@@ -10,36 +10,19 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-package io.github.nobuglady.network.fw.queue.ready;
+package io.github.nobuglady.network.fw;
 
-import io.github.nobuglady.network.fw.executor.INodeExecutor;
+import io.github.nobuglady.network.fw.queue.complete.CompleteNodeResult;
 
 /**
  * 
  * @author NoBugLady
  *
  */
-public interface IReadyQueue {
+public interface INodeCompleteListener {
 
 	/**
-	 * startConsumerThread
-	 * 
-	 * @param INodeExecutor nodeExecuter
-	 * @throws InterruptedException InterruptedException
+	 * onComplete
 	 */
-	public void startConsumerThread(INodeExecutor nodeExecuter);
-
-	/**
-	 * putReadyNode
-	 * 
-	 * @param flowId    flowId
-	 * @param historyId historyId
-	 * @param nodeId    nodeId
-	 */
-	public void putReadyNode(String flowId, String historyId, String nodeId);
-
-	/**
-	 * shutdown
-	 */
-	public void shutdown();
+	public void onNodeComplete(CompleteNodeResult nodeResult);
 }

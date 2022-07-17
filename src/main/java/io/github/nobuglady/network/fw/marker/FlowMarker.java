@@ -56,6 +56,9 @@ public class FlowMarker {
 		FlowContainer.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE, nodeStatusDetail);
 
 		HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId, nodeId, historyId);
+		if (historyNodeEntity == null) {
+			return false;
+		}
 
 		if (NodeStatus.COMPLETE != historyNodeEntity.getNodeStatus()) {
 			return true;

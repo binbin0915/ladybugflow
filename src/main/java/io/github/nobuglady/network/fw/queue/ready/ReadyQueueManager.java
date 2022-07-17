@@ -15,6 +15,9 @@ package io.github.nobuglady.network.fw.queue.ready;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import io.github.nobuglady.network.fw.executor.INodeExecutor;
+import io.github.nobuglady.network.fw.queue.ReadyQueueConsumerThread;
+
 /**
  * 
  * @author NoBugLady
@@ -24,13 +27,15 @@ public class ReadyQueueManager implements IReadyQueue {
 
 	private BlockingQueue<ReadyNodeResult> nodeCompleteQueue = new LinkedBlockingQueue<ReadyNodeResult>();
 
+	private ReadyQueueConsumerThread readyQueueConsumerThread;
+
 	/**
 	 * takeCompleteNode
 	 * 
 	 * @return ReadyNodeResult
 	 * @throws InterruptedException InterruptedException
 	 */
-	public ReadyNodeResult takeCompleteNode() throws InterruptedException {
+	public ReadyNodeResult takeReadyNode() throws InterruptedException {
 		return nodeCompleteQueue.take();
 	}
 
@@ -46,6 +51,26 @@ public class ReadyQueueManager implements IReadyQueue {
 			nodeCompleteQueue.put(new ReadyNodeResult(flowId, historyId, nodeId));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * startConsumerThread
+	 * 
+	 * @param INodeExecutor nodeExecutor
+	 * @throws InterruptedException InterruptedException
+	 */
+	public void startConsumerThread(INodeExecutor nodeExecutor) {
+		readyQueueConsumerThread = new ReadyQueueConsumerThread(this, nodeExecutor);
+		readyQueueConsumerThread.start();
+	}
+
+	/**
+	 * shutdown
+	 */
+	public void shutdown() {
+		if (readyQueueConsumerThread != null) {
+			readyQueueConsumerThread.shutdown();
 		}
 	}
 
