@@ -60,8 +60,7 @@ public class CompleteQueueManager implements ICompleteQueue {
 	/**
 	 * startConsumerThread
 	 * 
-	 * @param INodeCompleteListener nodeCompleteListener
-	 * @throws InterruptedException InterruptedException
+	 * @param nodeCompleteListener nodeCompleteListener
 	 */
 	public void startConsumerThread(INodeCompleteListener nodeCompleteListener) {
 		completeQueueConsumerThread = new CompleteQueueConsumerThread(this, nodeCompleteListener);

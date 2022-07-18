@@ -24,8 +24,7 @@ public interface IReadyQueue {
 	/**
 	 * startConsumerThread
 	 * 
-	 * @param INodeExecutor nodeExecuter
-	 * @throws InterruptedException InterruptedException
+	 * @param nodeExecuter nodeExecuter
 	 */
 	public void startConsumerThread(INodeExecutor nodeExecuter);
 

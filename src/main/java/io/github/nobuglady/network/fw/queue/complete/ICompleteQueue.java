@@ -24,8 +24,7 @@ public interface ICompleteQueue {
 	/**
 	 * startConsumerThread
 	 * 
-	 * @param INodeCompleteListener nodeCompleteListener
-	 * @throws InterruptedException InterruptedException
+	 * @param nodeCompleteListener nodeCompleteListener
 	 */
 	public void startConsumerThread(INodeCompleteListener nodeCompleteListener);
 

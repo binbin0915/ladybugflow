@@ -57,8 +57,7 @@ public class ReadyQueueManager implements IReadyQueue {
 	/**
 	 * startConsumerThread
 	 * 
-	 * @param INodeExecutor nodeExecutor
-	 * @throws InterruptedException InterruptedException
+	 * @param nodeExecutor nodeExecutor
 	 */
 	public void startConsumerThread(INodeExecutor nodeExecutor) {
 		readyQueueConsumerThread = new ReadyQueueConsumerThread(this, nodeExecutor);
