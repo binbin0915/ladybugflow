@@ -50,15 +50,15 @@ public class FlowMarker {
 		int nodeStatusDetail = nodeResult.getNodeStatus();
 		String returnValue = nodeResult.getNodeResult();
 
-		if (returnValue != null) {
-			FlowContainer.updateNodeReturnValueByNodeId(flowId, historyId, nodeId, returnValue);
-		}
-		FlowContainer.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE, nodeStatusDetail);
-
 		HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId, nodeId, historyId);
 		if (historyNodeEntity == null) {
 			return false;
 		}
+
+		if (returnValue != null) {
+			FlowContainer.updateNodeReturnValueByNodeId(flowId, historyId, nodeId, returnValue);
+		}
+		FlowContainer.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE, nodeStatusDetail);
 
 		if (NodeStatus.COMPLETE != historyNodeEntity.getNodeStatus()) {
 			return true;
