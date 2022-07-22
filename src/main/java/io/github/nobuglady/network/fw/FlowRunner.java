@@ -31,6 +31,16 @@ public class FlowRunner {
 
 	private BlockingQueue<String> completeQueue = new LinkedBlockingQueue<>();
 
+	private Object runnerObj = null;
+
+	public FlowRunner() {
+		runnerObj = this;
+	}
+
+	public FlowRunner(Object customRunnerObject) {
+		runnerObj = customRunnerObject;
+	}
+
 	/**
 	 * execute
 	 * 
@@ -50,14 +60,14 @@ public class FlowRunner {
 		logger.info("execute node id:" + nodeId);
 		logger.info("execute node name:" + nodeEntity.getNodeName());
 
-		Method methods[] = this.getClass().getMethods();
+		Method methods[] = runnerObj.getClass().getMethods();
 		if (methods != null) {
 			for (Method method : methods) {
 				Node node = method.getAnnotation(Node.class);
 				if (node != null) {
 					if (node.id().equals(nodeId) || node.label().equals(nodeName)) {
 						try {
-							Object rtnObj = method.invoke(this);
+							Object rtnObj = method.invoke(runnerObj);
 							if (rtnObj != null) {
 								return rtnObj.toString();
 							} else {
@@ -84,7 +94,7 @@ public class FlowRunner {
 
 		try {
 			Class.forName(FlowStarter.class.getName());
-			FlowManager.startFlow(this);
+			FlowManager.startFlow(this, null);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -115,6 +125,47 @@ public class FlowRunner {
 	}
 
 	/**
+	 * startFlowFromJson
+	 * 
+	 * @param jsonFileName jsonFileName
+	 * @return start result
+	 */
+	public int startFlowFromJson(String jsonFileName) {
+
+		try {
+			Class.forName(FlowStarter.class.getName());
+			FlowManager.startFlow(this, jsonFileName);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
+
+	/**
+	 * startFlowFromJson
+	 * 
+	 * @param jsonFileName jsonFileName
+	 * @param sync         sync
+	 * @return start result
+	 */
+	public int startFlowFromJson(String jsonFileName, boolean sync) {
+
+		if (!sync) {
+			return startFlowFromJson(jsonFileName);
+		} else {
+			startFlowFromJson(jsonFileName);
+			try {
+				completeQueue.take();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return 0;
+	}
+
+	/**
 	 * putComplete
 	 * 
 	 * @param result result
@@ -126,4 +177,5 @@ public class FlowRunner {
 			e.printStackTrace();
 		}
 	}
+
 }

@@ -38,6 +38,7 @@ import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
 import io.github.nobuglady.network.fw.queue.complete.CompleteNodeResult;
 import io.github.nobuglady.network.fw.starter.FlowStarter;
 import io.github.nobuglady.network.fw.util.FlowUtil;
+import io.github.nobuglady.network.fw.util.StringUtil;
 
 /**
  * 
@@ -110,11 +111,16 @@ public class FlowManager implements INodeCompleteListener {
 	/**
 	 * startFlow
 	 * 
-	 * @param flowRunner flowRunner
+	 * @param flowRunner   flowRunner
+	 * @param jsonFileName jsonFileName
 	 */
-	public static void startFlow(FlowRunner flowRunner) {
+	public static void startFlow(FlowRunner flowRunner, String jsonFileName) {
 
 		String flowPath = flowRunner.getClass().getName();
+
+		if (StringUtil.isNotEmpty(jsonFileName)) {
+			flowPath = jsonFileName.replace(".json", "");
+		}
 
 		FlowEntity flow = createHistory(flowPath);
 		String flowId = flow.flowEntity.getFlowId();
