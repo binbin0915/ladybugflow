@@ -58,7 +58,7 @@ public class MyFlow1 extends FlowRunner {
     }
    
     @Node (label=  "d" )
-    public void process_c() {
+    public void process_d() {
         System.out.println(  "processing d" );
     }
 }
