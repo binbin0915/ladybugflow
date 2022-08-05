@@ -10,21 +10,16 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-package io.github.nobuglady.network.fw.model;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+package io.github.nobuglady.network.fw.constant;
 
 /**
  * 
  * @author NoBugLady
  *
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class NodeDto {
+public class NodeStartType {
 
-	public String id;
-	public String label;
-	public int readyCheck;
-	public int startType;
-	public String startCron;
+	public static final int NODE_START_TYPE_DEFAULT = 1;
+	public static final int NODE_START_TYPE_WAIT_REQUEST = 2;
+	public static final int NODE_START_TYPE_TIMER = 3;
 }

@@ -15,14 +15,24 @@ package io.github.nobuglady.network.fw;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronExpression;
+import org.springframework.scheduling.support.CronTrigger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.nobuglady.network.fw.constant.FlowStatus;
+import io.github.nobuglady.network.fw.constant.NodeStartType;
 import io.github.nobuglady.network.fw.constant.NodeStatus;
 import io.github.nobuglady.network.fw.constant.NodeStatusDetail;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
@@ -46,6 +56,16 @@ import io.github.nobuglady.network.fw.util.StringUtil;
  *
  */
 public class FlowManager implements INodeCompleteListener {
+
+	private static ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();;
+
+	private static Map<String, String> scheduledFlowIdCronMap = new HashMap<String, String>();
+
+	private static Map<String, ScheduledFuture<?>> scheduledFutureMap = new HashMap<String, ScheduledFuture<?>>();
+
+	static {
+		taskScheduler.initialize();
+	}
 
 	/**
 	 * onNodeComplete
@@ -132,12 +152,104 @@ public class FlowManager implements INodeCompleteListener {
 
 		if (firstNodeList != null) {
 			for (HistoryNodeEntity firstNode : firstNodeList) {
-				String firstNodeId = firstNode.getNodeId();
-				firstNode.setNodeStatus(NodeStatus.READY);
-				startNode(flowId, historyId, firstNodeId);
+
+				if (firstNode.getStartType() == NodeStartType.NODE_START_TYPE_TIMER) {
+					String existCron = scheduledFlowIdCronMap.get(firstNode.getFlowId());
+
+					if (existCron == null) {
+						ScheduledFuture<?> future = register(firstNode.getStartCron(), flowRunner, jsonFileName,
+								firstNode.getFlowId(), firstNode.getHistoryId(), firstNode.getNodeId());
+						scheduledFlowIdCronMap.put(firstNode.getFlowId(), firstNode.getStartCron());
+						scheduledFutureMap.put(firstNode.getFlowId(), future);
+					} else {
+						if (existCron.equals(firstNode.getStartCron())) {
+							System.out.println("already scheduled:" + firstNode.getFlowId());
+						} else {
+							boolean cancelResult = scheduledFutureMap.get(firstNode.getFlowId()).cancel(false);
+
+							if (cancelResult) {
+								ScheduledFuture<?> future = register(firstNode.getStartCron(), flowRunner, jsonFileName,
+										firstNode.getFlowId(), firstNode.getHistoryId(), firstNode.getNodeId());
+								scheduledFlowIdCronMap.put(firstNode.getFlowId(), firstNode.getStartCron());
+								scheduledFutureMap.put(firstNode.getFlowId(), future);
+							} else {
+								System.out.println("task cancel faild:" + firstNode.getFlowId());
+							}
+
+						}
+
+					}
+
+				} else {
+
+					String firstNodeId = firstNode.getNodeId();
+					firstNode.setNodeStatus(NodeStatus.READY);
+					startNode(flowId, historyId, firstNodeId);
+
+				}
 			}
 		}
 
+	}
+
+	/**
+	 * register
+	 * 
+	 * @param cron         cron
+	 * @param flowRunner   flowRunner
+	 * @param jsonFileName jsonFileName
+	 * @param flowId       flowId
+	 * @param historyId    historyId
+	 * @param nodeId       nodeId
+	 * @return ScheduledFuture
+	 */
+	private static ScheduledFuture<?> register(String cron, FlowRunner flowRunner, String jsonFileName, String flowId,
+			String historyId, String nodeId) {
+
+		if (!CronExpression.isValidExpression(cron)) {
+			System.out.println("not a valied expression:" + cron);
+			return null;
+		}
+
+		CronExpression exp = CronExpression.parse(cron);
+		LocalDateTime nextTime = exp.next(LocalDateTime.now());
+
+		if (nextTime != null) {
+			System.out.println("[" + flowId + "] next execute time:"
+					+ nextTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+		}
+
+		return taskScheduler.schedule(new Runnable() {
+			@Override
+			public void run() {
+
+				try {
+					FlowRunner flowRunnerNew = flowRunner.getClass().newInstance();
+
+					String flowPath = flowRunnerNew.getClass().getName();
+
+					if (StringUtil.isNotEmpty(jsonFileName)) {
+						flowPath = jsonFileName.replace(".json", "");
+					}
+
+					FlowEntity flow = createHistory(flowPath);
+					String flowId = flow.flowEntity.getFlowId();
+					String historyId = flow.flowEntity.getHistoryId();
+
+					FlowContainer.flowRunnerMap.put(flowId + "," + historyId, flowRunnerNew);
+
+					HistoryNodeEntity firstNode = FlowContainer.selectNodeByKey(flowId, nodeId, historyId);
+					firstNode.setNodeStatus(NodeStatus.READY);
+					startNode(flowId, historyId, nodeId);
+
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}, new CronTrigger(cron));
 	}
 
 	/**
@@ -189,6 +301,8 @@ public class FlowManager implements INodeCompleteListener {
 					nodeEntity.setNodeId(nodeDto.id);
 					nodeEntity.setNodeName(nodeDto.label);
 					nodeEntity.setReadyCheck(nodeDto.readyCheck);
+					nodeEntity.setStartType(nodeDto.startType);
+					nodeEntity.setStartCron(nodeDto.startCron);
 
 					flowEntityDB.nodeEntityList.add(nodeEntity);
 				}
