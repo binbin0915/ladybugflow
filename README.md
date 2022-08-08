@@ -7,7 +7,7 @@
 
 Ladybugflow is a job flow framework for java, <br />
 It can run a jobflow design by json in java.<br />
-Also we support a UT tool to draw a flow and convert to json file.
+Also we support a UI tool to draw a flow and convert to json file.
 
 ### 1. Usage
 
