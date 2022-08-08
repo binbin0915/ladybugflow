@@ -5,6 +5,10 @@
 ![](https://img.shields.io/badge/license-Apache2.0-yellow)
 ![](https://img.shields.io/badge/Java-1.8-orange)
 
+Ladybugflow是一个java的工作流框架，<br />
+它可以在java中通过json运行工作流。<br />
+我们还支持UI工具来绘制流程并转换为json文件。
+
 ### 1. 使用方法
 
 #### 1.1. 导入依赖
