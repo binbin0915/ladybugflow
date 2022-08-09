@@ -223,30 +223,24 @@ public class FlowManager implements INodeCompleteListener {
 			@Override
 			public void run() {
 
-				try {
-					FlowRunner flowRunnerNew = flowRunner.getClass().newInstance();
+//				FlowRunner flowRunnerNew = flowRunner.getClass().newInstance();
+				FlowRunner flowRunnerNew = flowRunner;
 
-					String flowPath = flowRunnerNew.getClass().getName();
+				String flowPath = flowRunnerNew.getClass().getName();
 
-					if (StringUtil.isNotEmpty(jsonFileName)) {
-						flowPath = jsonFileName.replace(".json", "");
-					}
-
-					FlowEntity flow = createHistory(flowPath);
-					String flowId = flow.flowEntity.getFlowId();
-					String historyId = flow.flowEntity.getHistoryId();
-
-					FlowContainer.flowRunnerMap.put(flowId + "," + historyId, flowRunnerNew);
-
-					HistoryNodeEntity firstNode = FlowContainer.selectNodeByKey(flowId, nodeId, historyId);
-					firstNode.setNodeStatus(NodeStatus.READY);
-					startNode(flowId, historyId, nodeId);
-
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+				if (StringUtil.isNotEmpty(jsonFileName)) {
+					flowPath = jsonFileName.replace(".json", "");
 				}
+
+				FlowEntity flow = createHistory(flowPath);
+				String flowId = flow.flowEntity.getFlowId();
+				String historyId = flow.flowEntity.getHistoryId();
+
+				FlowContainer.flowRunnerMap.put(flowId + "," + historyId, flowRunnerNew);
+
+				HistoryNodeEntity firstNode = FlowContainer.selectNodeByKey(flowId, nodeId, historyId);
+				firstNode.setNodeStatus(NodeStatus.READY);
+				startNode(flowId, historyId, nodeId);
 
 			}
 		}, new CronTrigger(cron));
