@@ -9,6 +9,8 @@ Ladybugflow是一个java的工作流框架，<br />
 它可以在java中通过json运行工作流。<br />
 我们还支持UI工具来绘制流程并转换为json文件。
 
+[基本使用](README_CN.md) | [Properties配置](README_CN_PROPERTIES.md) | [SpringBoot整合](README_CN_SPRING_BOOT.md) | [SpringBatch整合](README_CN_SPRING_BATCH.md)
+
 ### 1. 使用方法
 
 #### 1.1. 导入依赖
@@ -150,9 +152,9 @@ myFlow1.startFlow();
 FlowStarter.shutdown();
 ```
 
-### 2. 运行结果
+#### 1.6. 运行结果
 
-#### 2.1. 成功日志
+##### 成功日志
 
 
 <details>
@@ -186,7 +188,7 @@ json:
 
 <img src="https://github.com/nobuglady/nobuglady-network/blob/main/readme/2.gif?raw=true" alt="" width="400px"/>
 
-#### 2.2. 错误日志
+##### 错误日志
 
 
 <details>
