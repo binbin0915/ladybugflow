@@ -13,4 +13,26 @@ Also we support a UI tool to draw a flow and convert to json file.
 
 ### 4. Integration with SpringBatch
 
-Now at work...
+
+App.java
+
+```
+@SpringBootApplication
+public class App implements ApplicationRunner {
+
+	@Autowired
+	private MyFlow myFlow;
+	
+	public static void main(String[] args) {
+		SpringApplication.run(App.class, args);
+	}
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+
+		myFlow.startFlow();
+		
+	}
+
+}
+```

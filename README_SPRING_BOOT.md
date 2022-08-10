@@ -13,4 +13,38 @@ Also we support a UI tool to draw a flow and convert to json file.
 
 ### 3. Integration With SpringBoot
 
-Now at work...
+
+At the system shutdown hook, you need to call FlowStarter.shutdown(); to shutdown the Flow manager.
+
+App.java
+
+```
+@SpringBootApplication
+public class App {
+
+	public static void main(String[] args) {
+		SpringApplication.run(App.class, args);
+	}
+
+	@PreDestroy
+	public void onExit() {
+		FlowStarter.shutdown();
+	}
+}
+```
+
+Inject custom Flow class into Service
+
+```
+@Service
+public class MyService {
+
+	@Autowired
+	private MyFlow myFlow;
+	
+	public void startMyFlow() {
+		myFlow.startFlow();
+	}
+
+}
+```

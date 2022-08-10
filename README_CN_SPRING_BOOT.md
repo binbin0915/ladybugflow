@@ -13,4 +13,37 @@ Ladybugflow是一个java的工作流框架，<br />
 
 ### 3. SpringBoot整合
 
-制作中。。。
+在系统结束时，需要调用FlowStarter.shutdown();来关闭Flow管理器。
+
+App.java
+
+```
+@SpringBootApplication
+public class App {
+
+	public static void main(String[] args) {
+		SpringApplication.run(App.class, args);
+	}
+
+	@PreDestroy
+	public void onExit() {
+		FlowStarter.shutdown();
+	}
+}
+```
+
+在Service中注入自定义的Flow类
+
+```
+@Service
+public class MyService {
+
+	@Autowired
+	private MyFlow myFlow;
+	
+	public void startMyFlow() {
+		myFlow.startFlow();
+	}
+
+}
+```

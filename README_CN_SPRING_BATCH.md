@@ -13,4 +13,26 @@ Ladybugflow是一个java的工作流框架，<br />
 
 ### 4. SpringBatch整合
 
-制作中。。。
+
+App.java
+
+```
+@SpringBootApplication
+public class App implements ApplicationRunner {
+
+	@Autowired
+	private MyFlow myFlow;
+	
+	public static void main(String[] args) {
+		SpringApplication.run(App.class, args);
+	}
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+
+		myFlow.startFlow();
+		
+	}
+
+}
+```
