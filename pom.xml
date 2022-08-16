@@ -7,7 +7,7 @@
   <name>ladybugflow</name>
   <url>https://github.com/nobuglady/ladybugflow</url>
   <description>
-        The ladybugflow helps to run a flow in java project described by json.
+        Ladybugflow is a job flow framework for java, It can run a jobflow design by json in java. Also we support a UI tool to draw a flow and convert to json file.
   </description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
