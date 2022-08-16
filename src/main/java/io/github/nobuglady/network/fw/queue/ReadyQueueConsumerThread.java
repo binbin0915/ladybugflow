@@ -12,9 +12,9 @@
  */
 package io.github.nobuglady.network.fw.queue;
 
-import io.github.nobuglady.network.fw.executor.INodeExecutor;
+import io.github.nobuglady.network.fw.component.FlowComponentFactory;
 import io.github.nobuglady.network.fw.queue.ready.ReadyNodeResult;
-import io.github.nobuglady.network.fw.queue.ready.ReadyQueueManager;
+import io.github.nobuglady.network.fw.starter.FlowStarter;
 
 /**
  * 
@@ -25,19 +25,11 @@ public class ReadyQueueConsumerThread extends Thread {
 
 	private volatile boolean stopFlag = false;
 
-	private INodeExecutor nodePool;
-
-	private ReadyQueueManager readyQueue;
-
 	/**
 	 * Constructor
 	 * 
-	 * @param readyQueue readyQueue
-	 * @param nodePool   nodePool
 	 */
-	public ReadyQueueConsumerThread(ReadyQueueManager readyQueue, INodeExecutor nodePool) {
-		this.readyQueue = readyQueue;
-		this.nodePool = nodePool;
+	public ReadyQueueConsumerThread() {
 	}
 
 	/**
@@ -47,9 +39,9 @@ public class ReadyQueueConsumerThread extends Thread {
 
 		while (!this.stopFlag) {
 			try {
-				ReadyNodeResult nodeResult = readyQueue.takeReadyNode();
+				ReadyNodeResult nodeResult = FlowStarter.nodeReadyQueue.take();
 				if (nodeResult != null) {
-					nodePool.onNodeReady(nodeResult);
+					FlowComponentFactory.getNodeExecutor().onNodeReady(nodeResult);
 				} else {
 					Thread.sleep(100);
 				}

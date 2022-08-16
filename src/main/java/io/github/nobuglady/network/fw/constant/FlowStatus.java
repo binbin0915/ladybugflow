@@ -28,4 +28,27 @@ public class FlowStatus {
 	public static final int ERROR = -1;
 	/** CANCEL */
 	public static final int CANCEL = -2;
+
+	/**
+	 * getFlowStatusString
+	 * 
+	 * @param status status
+	 * @return status string
+	 */
+	public static String getFlowStatusString(int status) {
+		switch (status) {
+		case READY:
+			return "READY";
+		case PROCESSING:
+			return "PROCESSING";
+		case COMPLETE:
+			return "COMPLETE";
+		case ERROR:
+			return "ERROR";
+		case CANCEL:
+			return "CANCEL";
+		default:
+			return "UNKNOWN";
+		}
+	}
 }

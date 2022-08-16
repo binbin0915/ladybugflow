@@ -10,23 +10,21 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-package io.github.nobuglady.network.fw.executor;
-
-import io.github.nobuglady.network.fw.queue.ready.ReadyNodeResult;
+package io.github.nobuglady.network.fw.component;
 
 /**
  * 
  * @author NoBugLady
  *
  */
-public interface INodeExecutor {
+public interface IReadyQueueReceiver {
 
 	/**
-	 * onNodeReady
+	 * startConsumerThread
 	 * 
-	 * @param readyNodeResult readyNodeResult
+	 * @param nodeExecuter nodeExecuter
 	 */
-	public void onNodeReady(ReadyNodeResult readyNodeResult);
+	public void startConsumerThread();
 
 	/**
 	 * shutdown

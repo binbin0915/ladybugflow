@@ -26,6 +26,7 @@ public class HistoryFlowEntity {
 	private String categoryId;
 	private String flowName;
 	private String flowDesc;
+	private String startParam;
 	private int flowStatus;
 	private String flowResult;
 	private Date startTime;
@@ -75,6 +76,14 @@ public class HistoryFlowEntity {
 
 	public void setFlowDesc(String flowDesc) {
 		this.flowDesc = flowDesc;
+	}
+
+	public String getStartParam() {
+		return startParam;
+	}
+
+	public void setStartParam(String startParam) {
+		this.startParam = startParam;
 	}
 
 	public int getFlowStatus() {

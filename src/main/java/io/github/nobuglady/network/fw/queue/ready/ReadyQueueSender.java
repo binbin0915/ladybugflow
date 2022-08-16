@@ -10,21 +10,31 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-package io.github.nobuglady.network.fw;
+package io.github.nobuglady.network.fw.queue.ready;
 
-import io.github.nobuglady.network.fw.queue.complete.CompleteNodeResult;
+import io.github.nobuglady.network.fw.component.IReadyQueueSender;
+import io.github.nobuglady.network.fw.starter.FlowStarter;
 
 /**
  * 
  * @author NoBugLady
  *
  */
-public interface INodeCompleteListener {
+public class ReadyQueueSender implements IReadyQueueSender {
 
 	/**
-	 * onComplete
+	 * putReadyNode
 	 * 
-	 * @param nodeResult nodeResult
+	 * @param flowId    flowId
+	 * @param historyId historyId
+	 * @param nodeId    nodeId
 	 */
-	public void onNodeComplete(CompleteNodeResult nodeResult);
+	public void putReadyNode(String flowId, String historyId, String nodeId) {
+		try {
+			FlowStarter.nodeReadyQueue.put(new ReadyNodeResult(flowId, historyId, nodeId));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

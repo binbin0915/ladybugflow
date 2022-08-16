@@ -15,6 +15,7 @@ package io.github.nobuglady.network.fw.executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.github.nobuglady.network.fw.component.INodeExecutor;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
 import io.github.nobuglady.network.fw.queue.ready.ReadyNodeResult;
 

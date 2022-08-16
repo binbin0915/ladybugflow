@@ -31,23 +31,19 @@ import org.springframework.scheduling.support.CronTrigger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.nobuglady.network.fw.constant.FlowStatus;
+import io.github.nobuglady.network.fw.component.FlowComponentFactory;
+import io.github.nobuglady.network.fw.component.IFlowAccessor;
 import io.github.nobuglady.network.fw.constant.NodeStartType;
 import io.github.nobuglady.network.fw.constant.NodeStatus;
-import io.github.nobuglady.network.fw.constant.NodeStatusDetail;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
-import io.github.nobuglady.network.fw.marker.FlowMarker;
 import io.github.nobuglady.network.fw.model.EdgeDto;
 import io.github.nobuglady.network.fw.model.FlowDto;
 import io.github.nobuglady.network.fw.model.NodeDto;
-import io.github.nobuglady.network.fw.persistance.FlowContainer;
 import io.github.nobuglady.network.fw.persistance.entity.FlowEntity;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryEdgeEntity;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryFlowEntity;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
-import io.github.nobuglady.network.fw.queue.complete.CompleteNodeResult;
 import io.github.nobuglady.network.fw.starter.FlowStarter;
-import io.github.nobuglady.network.fw.util.FlowUtil;
 import io.github.nobuglady.network.fw.util.StringUtil;
 
 /**
@@ -55,7 +51,7 @@ import io.github.nobuglady.network.fw.util.StringUtil;
  * @author NoBugLady
  *
  */
-public class FlowManager implements INodeCompleteListener {
+public class FlowRunnerHelper {
 
 	private static ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();;
 
@@ -63,69 +59,10 @@ public class FlowManager implements INodeCompleteListener {
 
 	private static Map<String, ScheduledFuture<?>> scheduledFutureMap = new HashMap<String, ScheduledFuture<?>>();
 
+	private static IFlowAccessor flowAccessor = FlowComponentFactory.getFlowAccessor();
+
 	static {
 		taskScheduler.initialize();
-	}
-
-	/**
-	 * onNodeComplete
-	 * 
-	 * @param nodeResult nodeResult
-	 */
-	public void onNodeComplete(CompleteNodeResult nodeResult) {
-
-		String flowId = nodeResult.getFlowId();
-		String historyId = nodeResult.getHistoryId();
-
-		ConsoleLogger logger = ConsoleLogger.getInstance(flowId, historyId);
-
-		try {
-			boolean markResult = FlowMarker.onNodeComplete(nodeResult);
-
-			if (!markResult) {
-				return;
-			}
-
-			List<HistoryNodeEntity> readyNodeList = getReadyNode(flowId, historyId);
-
-			if (readyNodeList.size() > 0) {
-				for (HistoryNodeEntity readyNode : readyNodeList) {
-					startNode(flowId, historyId, readyNode.getNodeId());
-				}
-			} else {
-
-				List<HistoryNodeEntity> runningNodeList = getRunningNode(flowId, historyId);
-				List<HistoryNodeEntity> openingNodeList = getOpenningNode(flowId, historyId);
-				List<HistoryNodeEntity> waitingNodeList = getWaitingNode(flowId, historyId);
-				List<HistoryNodeEntity> errorNodeList = getErrorNode(flowId, historyId);
-
-				if (runningNodeList.size() == 0 && openingNodeList.size() == 0 && waitingNodeList.size() == 0) {
-
-					if (errorNodeList.size() > 0) {
-						logger.info("Complete error.");
-						updateFlowStatus(flowId, historyId, true);
-					} else {
-						logger.info("Complete success.");
-						updateFlowStatus(flowId, historyId, false);
-					}
-
-					logger.info("json:\n" + FlowUtil.dumpJson(flowId, historyId));
-
-					if (errorNodeList.size() > 0) {
-						FlowContainer.flowRunnerMap.get(flowId + "," + historyId).putComplete("ERROR");
-					} else {
-						FlowContainer.flowRunnerMap.get(flowId + "," + historyId).putComplete("SUCCESS");
-					}
-
-					FlowContainer.flowMap.remove(flowId + "," + historyId);
-					FlowContainer.flowRunnerMap.remove(flowId + "," + historyId);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			updateFlowStatus(flowId, historyId, true);
-		}
-
 	}
 
 	/**
@@ -133,8 +70,9 @@ public class FlowManager implements INodeCompleteListener {
 	 * 
 	 * @param flowRunner   flowRunner
 	 * @param jsonFileName jsonFileName
+	 * @param startParam   startParam
 	 */
-	public static void startFlow(FlowRunner flowRunner, String jsonFileName) {
+	public static void startFlow(FlowRunner flowRunner, String jsonFileName, String startParam) {
 
 		String flowPath = flowRunner.getClass().getName();
 
@@ -142,11 +80,11 @@ public class FlowManager implements INodeCompleteListener {
 			flowPath = jsonFileName.replace(".json", "");
 		}
 
-		FlowEntity flow = createHistory(flowPath);
+		FlowEntity flow = createHistory(flowPath, startParam);
 		String flowId = flow.flowEntity.getFlowId();
 		String historyId = flow.flowEntity.getHistoryId();
 
-		FlowContainer.flowRunnerMap.put(flowId + "," + historyId, flowRunner);
+		FlowStarter.flowRunnerMap.put(flowId + "," + historyId, flowRunner);
 
 		List<HistoryNodeEntity> firstNodeList = getFirstNodeId(flow);
 
@@ -158,7 +96,7 @@ public class FlowManager implements INodeCompleteListener {
 
 					if (existCron == null) {
 						ScheduledFuture<?> future = register(firstNode.getStartCron(), flowRunner, jsonFileName,
-								firstNode.getFlowId(), firstNode.getHistoryId(), firstNode.getNodeId());
+								firstNode.getFlowId(), firstNode.getHistoryId(), firstNode.getNodeId(), startParam);
 						scheduledFlowIdCronMap.put(firstNode.getFlowId(), firstNode.getStartCron());
 						scheduledFutureMap.put(firstNode.getFlowId(), future);
 					} else {
@@ -169,7 +107,8 @@ public class FlowManager implements INodeCompleteListener {
 
 							if (cancelResult) {
 								ScheduledFuture<?> future = register(firstNode.getStartCron(), flowRunner, jsonFileName,
-										firstNode.getFlowId(), firstNode.getHistoryId(), firstNode.getNodeId());
+										firstNode.getFlowId(), firstNode.getHistoryId(), firstNode.getNodeId(),
+										startParam);
 								scheduledFlowIdCronMap.put(firstNode.getFlowId(), firstNode.getStartCron());
 								scheduledFutureMap.put(firstNode.getFlowId(), future);
 							} else {
@@ -183,7 +122,7 @@ public class FlowManager implements INodeCompleteListener {
 				} else {
 
 					String firstNodeId = firstNode.getNodeId();
-					firstNode.setNodeStatus(NodeStatus.READY);
+					flowAccessor.updateNodeStatusByNodeId(flowId, historyId, firstNodeId, NodeStatus.READY);
 					startNode(flowId, historyId, firstNodeId);
 
 				}
@@ -201,10 +140,11 @@ public class FlowManager implements INodeCompleteListener {
 	 * @param flowId       flowId
 	 * @param historyId    historyId
 	 * @param nodeId       nodeId
+	 * @param startParam   startParam
 	 * @return ScheduledFuture
 	 */
 	private static ScheduledFuture<?> register(String cron, FlowRunner flowRunner, String jsonFileName, String flowId,
-			String historyId, String nodeId) {
+			String historyId, String nodeId, String startParam) {
 
 		if (!CronExpression.isValidExpression(cron)) {
 			System.out.println("not a valied expression:" + cron);
@@ -232,14 +172,13 @@ public class FlowManager implements INodeCompleteListener {
 					flowPath = jsonFileName.replace(".json", "");
 				}
 
-				FlowEntity flow = createHistory(flowPath);
+				FlowEntity flow = createHistory(flowPath, startParam);
 				String flowId = flow.flowEntity.getFlowId();
 				String historyId = flow.flowEntity.getHistoryId();
 
-				FlowContainer.flowRunnerMap.put(flowId + "," + historyId, flowRunnerNew);
+				FlowStarter.flowRunnerMap.put(flowId + "," + historyId, flowRunnerNew);
 
-				HistoryNodeEntity firstNode = FlowContainer.selectNodeByKey(flowId, nodeId, historyId);
-				firstNode.setNodeStatus(NodeStatus.READY);
+				flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.READY);
 				startNode(flowId, historyId, nodeId);
 
 			}
@@ -249,15 +188,16 @@ public class FlowManager implements INodeCompleteListener {
 	/**
 	 * createHistory
 	 * 
-	 * @param flowPath flowPath
+	 * @param flowPath   flowPath
+	 * @param startParam startParam
 	 * @return FlowEntity
 	 */
-	private static FlowEntity createHistory(String flowPath) {
+	private static FlowEntity createHistory(String flowPath, String startParam) {
 
-		String historyId = FlowContainer.createHistoryId();
+		String historyId = flowAccessor.createHistoryId();
 
-		FlowEntity flow = loadJson(flowPath, historyId);
-		FlowContainer.flowMap.put(flow.flowEntity.getFlowId() + "," + historyId, flow);
+		FlowEntity flow = loadJson(flowPath, historyId, startParam);
+		flowAccessor.saveFlow(flow);
 
 		return flow;
 	}
@@ -265,16 +205,17 @@ public class FlowManager implements INodeCompleteListener {
 	/**
 	 * loadJson
 	 * 
-	 * @param flowPath  flowPath
-	 * @param historyId historyId
+	 * @param flowPath   flowPath
+	 * @param historyId  historyId
+	 * @param startParam startParam
 	 * @return FlowEntity
 	 */
-	private static FlowEntity loadJson(String flowPath, String historyId) {
+	private static FlowEntity loadJson(String flowPath, String historyId, String startParam) {
 
 		FlowEntity flowEntityDB = new FlowEntity();
 
 		try (Reader reader = new InputStreamReader(
-				FlowManager.class.getResourceAsStream("/" + flowPath.replace(".", "/") + ".json"))) {
+				FlowRunnerHelper.class.getResourceAsStream("/" + flowPath.replace(".", "/") + ".json"))) {
 
 			ObjectMapper mapper = new ObjectMapper();
 			FlowDto flowDto = mapper.readValue(reader, FlowDto.class);
@@ -282,6 +223,7 @@ public class FlowManager implements INodeCompleteListener {
 			HistoryFlowEntity flowEntity = new HistoryFlowEntity();
 			flowEntity.setFlowId(flowDto.flowId);
 			flowEntity.setHistoryId(historyId);
+			flowEntity.setStartParam(startParam);
 
 			ConsoleLogger logger = ConsoleLogger.getInstance(flowDto.flowId, historyId);
 
@@ -305,6 +247,7 @@ public class FlowManager implements INodeCompleteListener {
 			if (flowDto.edges != null) {
 				for (EdgeDto edgeDto : flowDto.edges) {
 					HistoryEdgeEntity edgeEntity = new HistoryEdgeEntity();
+					edgeEntity.setFlowId(flowEntity.getFlowId());
 					edgeEntity.setHistoryId(historyId);
 					edgeEntity.setEdgeId(edgeDto.id);
 					edgeEntity.setFromNodeId(edgeDto.from);
@@ -318,7 +261,7 @@ public class FlowManager implements INodeCompleteListener {
 			String json = mapper.writeValueAsString(flowDto);
 			logger.info("json:\n" + json);
 
-			FlowContainer.saveFlow(flowEntityDB);
+			flowAccessor.saveFlow(flowEntityDB);
 			return flowEntityDB;
 
 		} catch (IOException e) {
@@ -326,26 +269,6 @@ public class FlowManager implements INodeCompleteListener {
 		}
 
 		return null;
-	}
-
-	////////////////////////////////////////////////////////
-	// shutdown
-	////////////////////////////////////////////////////////
-
-	/**
-	 * updateFlowStatus
-	 * 
-	 * @param flowId    flowId
-	 * @param historyId historyId
-	 * @param hasError  hasError
-	 */
-	public static void updateFlowStatus(String flowId, String historyId, boolean hasError) {
-
-		if (hasError) {
-			FlowContainer.updateFlowStatus(flowId, historyId, FlowStatus.ERROR);
-		} else {
-			FlowContainer.updateFlowStatus(flowId, historyId, FlowStatus.COMPLETE);
-		}
 	}
 
 	//////////////////////////////
@@ -389,89 +312,8 @@ public class FlowManager implements INodeCompleteListener {
 	 */
 	private static void startNode(String flowId, String historyId, String nodeId) {
 
-		FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.RUNNING);
-		FlowStarter.readyQueue.putReadyNode(flowId, historyId, nodeId);
-	}
-
-	/**
-	 * getReadyNode
-	 * 
-	 * @param flowId    flowId
-	 * @param historyId historyId
-	 * @return HistoryNodeEntity
-	 */
-	private static List<HistoryNodeEntity> getReadyNode(String flowId, String historyId) {
-
-		List<HistoryNodeEntity> result = new ArrayList<>();
-
-		List<HistoryNodeEntity> result_ready = FlowContainer.selectNodeListByStatus(flowId, historyId,
-				NodeStatus.READY);
-
-		if (result_ready != null) {
-			result.addAll(result_ready);
-		}
-		return result;
-	}
-
-	/**
-	 * getRunningNode
-	 * 
-	 * @param flowId    flowId
-	 * @param historyId historyId
-	 * @return HistoryNodeEntity
-	 */
-	private static List<HistoryNodeEntity> getRunningNode(String flowId, String historyId) {
-		List<HistoryNodeEntity> result = FlowContainer.selectNodeListByStatus(flowId, historyId, NodeStatus.RUNNING);
-		if (result == null) {
-			return new ArrayList<>();
-		}
-		return result;
-	}
-
-	/**
-	 * getOpenningNode
-	 * 
-	 * @param flowId    flowId
-	 * @param historyId historyId
-	 * @return HistoryNodeEntity
-	 */
-	private static List<HistoryNodeEntity> getOpenningNode(String flowId, String historyId) {
-		List<HistoryNodeEntity> result = FlowContainer.selectNodeListByStatus(flowId, historyId, NodeStatus.OPENNING);
-		if (result == null) {
-			return new ArrayList<>();
-		}
-		return result;
-	}
-
-	/**
-	 * getWaitingNode
-	 * 
-	 * @param flowId    flowId
-	 * @param historyId historyId
-	 * @return HistoryNodeEntity
-	 */
-	private static List<HistoryNodeEntity> getWaitingNode(String flowId, String historyId) {
-		List<HistoryNodeEntity> result = FlowContainer.selectNodeListByStatus(flowId, historyId, NodeStatus.WAIT);
-		if (result == null) {
-			return new ArrayList<>();
-		}
-		return result;
-	}
-
-	/**
-	 * getErrorNode
-	 * 
-	 * @param flowId    flowId
-	 * @param historyId historyId
-	 * @return HistoryNodeEntity
-	 */
-	private static List<HistoryNodeEntity> getErrorNode(String flowId, String historyId) {
-		List<HistoryNodeEntity> result = FlowContainer.selectNodeListByStatusDetail(flowId, historyId,
-				NodeStatus.COMPLETE, NodeStatusDetail.COMPLETE_ERROR);
-		if (result == null) {
-			return new ArrayList<>();
-		}
-		return result;
+		flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.RUNNING);
+		FlowComponentFactory.getReadyQueueSender().putReadyNode(flowId, historyId, nodeId);
 	}
 
 }

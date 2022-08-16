@@ -33,6 +33,16 @@ public class FlowRunner {
 
 	private Object runnerObj = null;
 
+	static {
+
+		try {
+			Class.forName(FlowStarter.class.getName());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public FlowRunner() {
 		runnerObj = this;
 	}
@@ -91,14 +101,17 @@ public class FlowRunner {
 	 * @return start result
 	 */
 	public int startFlow() {
+		return startFlow(null);
+	}
 
-		try {
-			Class.forName(FlowStarter.class.getName());
-			FlowManager.startFlow(this, null);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-
+	/**
+	 * startFlow
+	 * 
+	 * @param startParam startParam
+	 * @return start result
+	 */
+	public int startFlow(String startParam) {
+		FlowRunnerHelper.startFlow(this, null, startParam);
 		return 0;
 	}
 
@@ -109,11 +122,22 @@ public class FlowRunner {
 	 * @return start result
 	 */
 	public int startFlow(boolean sync) {
+		return startFlow(sync, null);
+	}
+
+	/**
+	 * startFlow
+	 * 
+	 * @param sync       sync
+	 * @param startParam startParam
+	 * @return start result
+	 */
+	public int startFlow(boolean sync, String startParam) {
 
 		if (!sync) {
-			return startFlow();
+			return startFlow(startParam);
 		} else {
-			startFlow();
+			startFlow(startParam);
 			try {
 				completeQueue.take();
 			} catch (InterruptedException e) {
@@ -131,14 +155,18 @@ public class FlowRunner {
 	 * @return start result
 	 */
 	public int startFlowFromJson(String jsonFileName) {
+		return startFlowFromJson(jsonFileName, null);
+	}
 
-		try {
-			Class.forName(FlowStarter.class.getName());
-			FlowManager.startFlow(this, jsonFileName);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-
+	/**
+	 * startFlowFromJson
+	 * 
+	 * @param jsonFileName jsonFileName
+	 * @param startParam   startParam
+	 * @return start result
+	 */
+	public int startFlowFromJson(String jsonFileName, String startParam) {
+		FlowRunnerHelper.startFlow(this, jsonFileName, startParam);
 		return 0;
 	}
 
@@ -150,11 +178,23 @@ public class FlowRunner {
 	 * @return start result
 	 */
 	public int startFlowFromJson(String jsonFileName, boolean sync) {
+		return startFlowFromJson(jsonFileName, sync, null);
+	}
+
+	/**
+	 * startFlowFromJson
+	 * 
+	 * @param jsonFileName jsonFileName
+	 * @param sync         sync
+	 * @param startParam   startParam
+	 * @return start result
+	 */
+	public int startFlowFromJson(String jsonFileName, boolean sync, String startParam) {
 
 		if (!sync) {
-			return startFlowFromJson(jsonFileName);
+			return startFlowFromJson(jsonFileName, startParam);
 		} else {
-			startFlowFromJson(jsonFileName);
+			startFlowFromJson(jsonFileName, startParam);
 			try {
 				completeQueue.take();
 			} catch (InterruptedException e) {

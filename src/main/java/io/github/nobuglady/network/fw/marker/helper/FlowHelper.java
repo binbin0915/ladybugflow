@@ -15,8 +15,9 @@ package io.github.nobuglady.network.fw.marker.helper;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.nobuglady.network.fw.component.FlowComponentFactory;
+import io.github.nobuglady.network.fw.component.IFlowAccessor;
 import io.github.nobuglady.network.fw.marker.helper.model.FlowHelperModel;
-import io.github.nobuglady.network.fw.persistance.FlowContainer;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryEdgeEntity;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryFlowEntity;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
@@ -28,6 +29,8 @@ import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
  */
 public class FlowHelper {
 
+	private IFlowAccessor flowAccessor = FlowComponentFactory.getFlowAccessor();
+
 	/**
 	 * getFlow
 	 * 
@@ -37,9 +40,9 @@ public class FlowHelper {
 	 */
 	public FlowHelperModel getFlow(String flowId, String historyId) {
 
-		List<HistoryEdgeEntity> edgeHistoryEntityList = FlowContainer.selectEdgeByFlowHistoryId(flowId, historyId);
-		List<HistoryNodeEntity> nodeHistoryEntityList = FlowContainer.selectNodeByFlowHistoryId(flowId, historyId);
-		HistoryFlowEntity flowHistoryEntity = FlowContainer.selectFlowByKey(flowId, historyId);
+		List<HistoryEdgeEntity> edgeHistoryEntityList = flowAccessor.selectEdgeByFlowHistoryId(flowId, historyId);
+		List<HistoryNodeEntity> nodeHistoryEntityList = flowAccessor.selectNodeByFlowHistoryId(flowId, historyId);
+		HistoryFlowEntity flowHistoryEntity = flowAccessor.selectFlowByKey(flowId, historyId);
 
 		return loadConfig(flowHistoryEntity, edgeHistoryEntityList, nodeHistoryEntityList);
 	}

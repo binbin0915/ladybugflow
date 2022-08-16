@@ -15,9 +15,10 @@ package io.github.nobuglady.network.fw.executor;
 import java.util.concurrent.CancellationException;
 
 import io.github.nobuglady.network.fw.FlowRunner;
+import io.github.nobuglady.network.fw.component.FlowComponentFactory;
+import io.github.nobuglady.network.fw.component.IFlowAccessor;
 import io.github.nobuglady.network.fw.constant.NodeStatusDetail;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
-import io.github.nobuglady.network.fw.persistance.FlowContainer;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
 import io.github.nobuglady.network.fw.starter.FlowStarter;
 
@@ -27,6 +28,8 @@ import io.github.nobuglady.network.fw.starter.FlowStarter;
  *
  */
 public class NodeRunner implements Runnable {
+
+	private IFlowAccessor flowAccessor = FlowComponentFactory.getFlowAccessor();
 
 	private String flowId;
 	private String historyId;
@@ -62,14 +65,14 @@ public class NodeRunner implements Runnable {
 
 		try {
 
-			HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId, nodeId, historyId);
+			HistoryNodeEntity historyNodeEntity = flowAccessor.selectNodeByKey(flowId, nodeId, historyId);
 			if (historyNodeEntity == null) {
 				return;
 			}
 			nodeName = historyNodeEntity.getNodeName();
 
 			// run
-			FlowRunner flowRunner = FlowContainer.flowRunnerMap.get(flowId + "," + historyId);
+			FlowRunner flowRunner = FlowStarter.flowRunnerMap.get(flowId + "," + historyId);
 			consoleLogger.debug(" [NODE RUNNING]" + historyNodeEntity.getNodeName());
 			String returnValue = flowRunner.execute(historyNodeEntity.getFlowId(), historyNodeEntity.getNodeId(),
 					historyNodeEntity.getHistoryId(), historyNodeEntity);
@@ -77,21 +80,22 @@ public class NodeRunner implements Runnable {
 			// complete
 			consoleLogger.debug(" [NODE COMPLETE][" + returnValue + "]" + historyNodeEntity.getNodeName());
 
-			FlowStarter.completeQueue.putCompleteNode(flowId, historyId, nodeId, NodeStatusDetail.COMPLETE_SUCCESS,
-					returnValue);
+			FlowComponentFactory.getCompleteQueueSender().putCompleteNode(flowId, historyId, nodeId,
+					NodeStatusDetail.COMPLETE_SUCCESS, returnValue);
 
 		} catch (CancellationException e) {
 
 			consoleLogger.error(" [NODE CANCEL]" + nodeName, e);
-			FlowStarter.completeQueue.putCompleteNode(flowId, historyId, nodeId, NodeStatusDetail.COMPLETE_CANCEL,
-					null);
+			FlowComponentFactory.getCompleteQueueSender().putCompleteNode(flowId, historyId, nodeId,
+					NodeStatusDetail.COMPLETE_CANCEL, null);
 
 		} catch (Throwable e) {
 
 			e.printStackTrace();
 
 			consoleLogger.error(" [NODE ERROR]" + nodeName, e);
-			FlowStarter.completeQueue.putCompleteNode(flowId, historyId, nodeId, NodeStatusDetail.COMPLETE_ERROR, null);
+			FlowComponentFactory.getCompleteQueueSender().putCompleteNode(flowId, historyId, nodeId,
+					NodeStatusDetail.COMPLETE_ERROR, null);
 
 		} finally {
 

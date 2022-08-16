@@ -13,13 +13,17 @@
 package io.github.nobuglady.network.fw.starter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import io.github.nobuglady.network.fw.FlowManager;
-import io.github.nobuglady.network.fw.executor.INodeExecutor;
+import io.github.nobuglady.network.fw.FlowRunner;
+import io.github.nobuglady.network.fw.component.FlowComponentFactory;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
-import io.github.nobuglady.network.fw.queue.complete.ICompleteQueue;
-import io.github.nobuglady.network.fw.queue.ready.IReadyQueue;
+import io.github.nobuglady.network.fw.queue.complete.CompleteNodeResult;
+import io.github.nobuglady.network.fw.queue.ready.ReadyNodeResult;
 import io.github.nobuglady.network.fw.util.StringUtil;
 
 /**
@@ -29,18 +33,25 @@ import io.github.nobuglady.network.fw.util.StringUtil;
  */
 public class FlowStarter {
 
-	public static IReadyQueue readyQueue;
-	public static ICompleteQueue completeQueue;
-	public static INodeExecutor nodeExecutor;
 	public static boolean nodeExecutorRemote = false;
+	public static boolean deleteOnComplete = true;
+	public static boolean deleteOnError = true;
+
+	public static BlockingQueue<ReadyNodeResult> nodeReadyQueue = new LinkedBlockingQueue<ReadyNodeResult>();
+	public static BlockingQueue<CompleteNodeResult> nodeCompleteQueue = new LinkedBlockingQueue<CompleteNodeResult>();
+
+	/** key: flowId, historyId */
+	public static Map<String, FlowRunner> flowRunnerMap = new HashMap<>();
 
 	private static ConsoleLogger logger = ConsoleLogger.getInstance();
 
 	static {
 
-		String readyQueueClassName = "io.github.nobuglady.network.fw.queue.ready.ReadyQueueManager";
-		String completeQueueClassName = "io.github.nobuglady.network.fw.queue.complete.CompleteQueueManager";
-		String nodeExecutorClassName = "io.github.nobuglady.network.fw.executor.NodePool";
+		try {
+			Class.forName(FlowComponentFactory.class.getName());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 
 		nodeExecutorRemote = false;
 
@@ -52,56 +63,42 @@ public class FlowStarter {
 		}
 
 		if (prop != null) {
-			String readyQueueClassNameStr = prop.getProperty("queue.ready.manager");
-			String completeQueueClassNameStr = prop.getProperty("queue.complete.manager");
-			String nodeExecutorClassNameStr = prop.getProperty("node.executor");
 			String nodeExecutorRemoteStr = prop.getProperty("node.executor.remote");
+			String deleteOnCompleteStr = prop.getProperty("flow.delete_on_complete");
+			String deleteOnErrorStr = prop.getProperty("flow.delete_on_error");
 
-			if (StringUtil.isNotEmpty(readyQueueClassNameStr)) {
-				readyQueueClassName = readyQueueClassNameStr;
-			}
-			if (StringUtil.isNotEmpty(completeQueueClassNameStr)) {
-				completeQueueClassName = completeQueueClassNameStr;
-			}
-			if (StringUtil.isNotEmpty(nodeExecutorClassNameStr)) {
-				nodeExecutorClassName = nodeExecutorClassNameStr;
-			}
 			if (StringUtil.isNotEmpty(nodeExecutorRemoteStr)) {
 				nodeExecutorRemote = Boolean.valueOf(nodeExecutorRemoteStr);
 			}
-		}
-
-		try {
-
-			readyQueue = (IReadyQueue) Class.forName(readyQueueClassName).newInstance();
-			completeQueue = (ICompleteQueue) Class.forName(completeQueueClassName).newInstance();
-
-			if (!nodeExecutorRemote) {
-				nodeExecutor = (INodeExecutor) Class.forName(nodeExecutorClassName).newInstance();
-				readyQueue.startConsumerThread(nodeExecutor);
-				logger.info("Ready queue consumer thread started.");
+			if (StringUtil.isNotEmpty(deleteOnCompleteStr)) {
+				deleteOnComplete = Boolean.valueOf(deleteOnCompleteStr);
 			}
-
-			completeQueue.startConsumerThread(new FlowManager());
-			logger.info("Complete queue consumer thread started.");
-
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-			e.printStackTrace();
+			if (StringUtil.isNotEmpty(deleteOnErrorStr)) {
+				deleteOnError = Boolean.valueOf(deleteOnErrorStr);
+			}
 		}
+
+		if (!nodeExecutorRemote) {
+			FlowComponentFactory.getReadyQueueReceiver().startConsumerThread();
+			logger.info("Ready queue consumer thread started.");
+		}
+
+		FlowComponentFactory.getCompleteQueueReceiver().startConsumerThread();
+		logger.info("Complete queue consumer thread started.");
 
 	}
 
 	public static void shutdown() {
 		if (!nodeExecutorRemote) {
-			readyQueue.shutdown();
+			FlowComponentFactory.getReadyQueueReceiver().shutdown();
 			logger.info("Ready queue thread stoped.");
 		}
 
-		completeQueue.shutdown();
+		FlowComponentFactory.getCompleteQueueReceiver().shutdown();
 		logger.info("Ready queue thread stoped.");
 
-		if (nodeExecutor != null) {
-			nodeExecutor.shutdown();
+		if (FlowComponentFactory.getNodeExecutor() != null) {
+			FlowComponentFactory.getNodeExecutor().shutdown();
 			logger.info("NodePool stoped.");
 		}
 	}

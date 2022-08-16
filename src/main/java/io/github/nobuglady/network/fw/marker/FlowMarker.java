@@ -12,19 +12,26 @@
  */
 package io.github.nobuglady.network.fw.marker;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.github.nobuglady.network.fw.component.FlowComponentFactory;
+import io.github.nobuglady.network.fw.component.IFlowAccessor;
+import io.github.nobuglady.network.fw.component.IFlowMarker;
 import io.github.nobuglady.network.fw.constant.EdgeStatus;
+import io.github.nobuglady.network.fw.constant.FlowStatus;
 import io.github.nobuglady.network.fw.constant.NodeReadyCheck;
 import io.github.nobuglady.network.fw.constant.NodeStatus;
 import io.github.nobuglady.network.fw.constant.NodeStatusDetail;
+import io.github.nobuglady.network.fw.logger.ConsoleLogger;
 import io.github.nobuglady.network.fw.marker.helper.FlowHelper;
 import io.github.nobuglady.network.fw.marker.helper.model.FlowHelperModel;
-import io.github.nobuglady.network.fw.persistance.FlowContainer;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryEdgeEntity;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
 import io.github.nobuglady.network.fw.queue.complete.CompleteNodeResult;
+import io.github.nobuglady.network.fw.starter.FlowStarter;
+import io.github.nobuglady.network.fw.util.FlowUtil;
 import io.github.nobuglady.network.fw.util.StringUtil;
 
 /**
@@ -32,17 +39,86 @@ import io.github.nobuglady.network.fw.util.StringUtil;
  * @author NoBugLady
  *
  */
-public class FlowMarker {
+public class FlowMarker implements IFlowMarker {
 
-	private static FlowHelper flowHelper = new FlowHelper();
+	private FlowHelper flowHelper = new FlowHelper();
+
+	private IFlowAccessor flowAccessor = FlowComponentFactory.getFlowAccessor();
 
 	/**
 	 * onNodeComplete
 	 * 
 	 * @param nodeResult nodeResult
+	 */
+	public void onNodeComplete(CompleteNodeResult nodeResult) {
+
+		String flowId = nodeResult.getFlowId();
+		String historyId = nodeResult.getHistoryId();
+
+		ConsoleLogger logger = ConsoleLogger.getInstance(flowId, historyId);
+
+		try {
+			boolean markResult = mark(nodeResult);
+
+			if (!markResult) {
+				return;
+			}
+
+			List<HistoryNodeEntity> readyNodeList = getReadyNode(flowId, historyId);
+
+			if (readyNodeList.size() > 0) {
+				for (HistoryNodeEntity readyNode : readyNodeList) {
+					startNode(flowId, historyId, readyNode.getNodeId());
+				}
+			} else {
+
+				List<HistoryNodeEntity> runningNodeList = getRunningNode(flowId, historyId);
+				List<HistoryNodeEntity> openingNodeList = getOpenningNode(flowId, historyId);
+				List<HistoryNodeEntity> waitingNodeList = getWaitingNode(flowId, historyId);
+				List<HistoryNodeEntity> errorNodeList = getErrorNode(flowId, historyId);
+
+				if (runningNodeList.size() == 0 && openingNodeList.size() == 0 && waitingNodeList.size() == 0) {
+
+					if (errorNodeList.size() > 0) {
+						logger.info("Complete error.");
+						updateFlowStatus(flowId, historyId, true);
+					} else {
+						logger.info("Complete success.");
+						updateFlowStatus(flowId, historyId, false);
+					}
+
+					logger.info("json:\n" + FlowUtil.dumpJson(flowId, historyId));
+
+					if (errorNodeList.size() > 0) {
+						FlowStarter.flowRunnerMap.get(flowId + "," + historyId).putComplete("ERROR");
+						if (FlowStarter.deleteOnError) {
+							flowAccessor.removeFlow(flowId, historyId);
+							FlowStarter.flowRunnerMap.remove(flowId + "," + historyId);
+						}
+					} else {
+						FlowStarter.flowRunnerMap.get(flowId + "," + historyId).putComplete("SUCCESS");
+						if (FlowStarter.deleteOnComplete) {
+							flowAccessor.removeFlow(flowId, historyId);
+							FlowStarter.flowRunnerMap.remove(flowId + "," + historyId);
+						}
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			updateFlowStatus(flowId, historyId, true);
+		}
+
+	}
+
+	/**
+	 * mark
+	 * 
+	 * @param nodeResult nodeResult
 	 * @return true:check flow status
 	 */
-	public static boolean onNodeComplete(CompleteNodeResult nodeResult) {
+	public boolean mark(CompleteNodeResult nodeResult) {
 
 		String flowId = nodeResult.getFlowId();
 		String historyId = nodeResult.getHistoryId();
@@ -50,21 +126,21 @@ public class FlowMarker {
 		int nodeStatusDetail = nodeResult.getNodeStatus();
 		String returnValue = nodeResult.getNodeResult();
 
-		HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId, nodeId, historyId);
+		HistoryNodeEntity historyNodeEntity = flowAccessor.selectNodeByKey(flowId, nodeId, historyId);
 		if (historyNodeEntity == null) {
 			return false;
 		}
 
 		if (returnValue != null) {
-			FlowContainer.updateNodeReturnValueByNodeId(flowId, historyId, nodeId, returnValue);
+			flowAccessor.updateNodeReturnValueByNodeId(flowId, historyId, nodeId, returnValue);
 		}
-		FlowContainer.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE, nodeStatusDetail);
+		flowAccessor.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE, nodeStatusDetail);
 
 		if (NodeStatus.COMPLETE != historyNodeEntity.getNodeStatus()) {
 			return true;
 		}
 
-		FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.GO);
+		flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.GO);
 
 		// mark next
 		return markNext(flowId, historyId, nodeId);
@@ -79,7 +155,7 @@ public class FlowMarker {
 	 * @param nodeId    nodeId
 	 * @return true:check flow status
 	 */
-	private static boolean markNext(String flowId, String historyId, String nodeId) {
+	private boolean markNext(String flowId, String historyId, String nodeId) {
 
 		FlowHelperModel flow = flowHelper.getFlow(flowId, historyId);
 
@@ -101,9 +177,7 @@ public class FlowMarker {
 
 				int edgeStatus = checkCondition(nodeFrom.getNodeStatusDetail(), nodeFrom.getReturnValue(),
 						edge.getEdgeCondition());
-				edge.setEdgeStatus(edgeStatus);
-				FlowContainer.updateEdgeStatusByKey(edge.getFlowId(), edge.getHistoryId(), edge.getEdgeId(),
-						edgeStatus);
+				flowAccessor.updateEdgeStatusByKey(edge.getFlowId(), edge.getHistoryId(), edge.getEdgeId(), edgeStatus);
 
 				boolean needWait = false;
 				boolean hasError = false;
@@ -132,15 +206,15 @@ public class FlowMarker {
 
 				if (!needWait) {
 					if (hasError) {
-						FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.INIT);
+						flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.INIT);
 					} else {
 						if (hasOk) {
 
-							HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId,
+							HistoryNodeEntity historyNodeEntity = flowAccessor.selectNodeByKey(flowId,
 									nodeTo.getNodeId(), historyId);
 							if (historyNodeEntity.getNodeStatus() == NodeStatus.WAIT
 									|| historyNodeEntity.getNodeStatus() == NodeStatus.INIT) {
-								FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
+								flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
 										NodeStatus.READY);
 							} else {
 								return false;
@@ -157,22 +231,22 @@ public class FlowMarker {
 					if (NodeReadyCheck.CHECK_SINGLE == nodeTo.getReadyCheck()) {
 						if (hasOk) {
 
-							HistoryNodeEntity historyNodeEntity = FlowContainer.selectNodeByKey(flowId,
+							HistoryNodeEntity historyNodeEntity = flowAccessor.selectNodeByKey(flowId,
 									nodeTo.getNodeId(), historyId);
 							if (historyNodeEntity.getNodeStatus() == NodeStatus.WAIT
 									|| historyNodeEntity.getNodeStatus() == NodeStatus.INIT) {
-								FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
+								flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
 										NodeStatus.READY);
 							} else {
 								return false;
 							}
 
 						} else {
-							FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
+							flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
 									NodeStatus.WAIT);
 						}
 					} else {
-						FlowContainer.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.WAIT);
+						flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.WAIT);
 					}
 
 				}
@@ -191,7 +265,7 @@ public class FlowMarker {
 	 * @param edgeCondition    edgeCondition
 	 * @return edgeStatus
 	 */
-	private static int checkCondition(int nodeStatusDetail, String returnValue, String edgeCondition) {
+	private int checkCondition(int nodeStatusDetail, String returnValue, String edgeCondition) {
 
 		if (!(NodeStatusDetail.COMPLETE_SUCCESS == nodeStatusDetail)) {
 			return EdgeStatus.ERROR;
@@ -206,6 +280,119 @@ public class FlowMarker {
 		}
 
 		return EdgeStatus.NG;
+	}
+
+	////////////////////////////////////////////////////////
+	// shutdown
+	////////////////////////////////////////////////////////
+
+	/**
+	 * updateFlowStatus
+	 * 
+	 * @param flowId    flowId
+	 * @param historyId historyId
+	 * @param hasError  hasError
+	 */
+	public void updateFlowStatus(String flowId, String historyId, boolean hasError) {
+
+		if (hasError) {
+			flowAccessor.updateFlowStatus(flowId, historyId, FlowStatus.ERROR);
+		} else {
+			flowAccessor.updateFlowStatus(flowId, historyId, FlowStatus.COMPLETE);
+		}
+	}
+
+	/**
+	 * startNode
+	 * 
+	 * @param flowId    flowId
+	 * @param historyId historyId
+	 * @param nodeId    nodeId
+	 */
+	private void startNode(String flowId, String historyId, String nodeId) {
+
+		flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.RUNNING);
+		FlowComponentFactory.getReadyQueueSender().putReadyNode(flowId, historyId, nodeId);
+	}
+
+	/**
+	 * getReadyNode
+	 * 
+	 * @param flowId    flowId
+	 * @param historyId historyId
+	 * @return HistoryNodeEntity
+	 */
+	private List<HistoryNodeEntity> getReadyNode(String flowId, String historyId) {
+
+		List<HistoryNodeEntity> result = new ArrayList<>();
+
+		List<HistoryNodeEntity> result_ready = flowAccessor.selectNodeListByStatus(flowId, historyId, NodeStatus.READY);
+
+		if (result_ready != null) {
+			result.addAll(result_ready);
+		}
+		return result;
+	}
+
+	/**
+	 * getRunningNode
+	 * 
+	 * @param flowId    flowId
+	 * @param historyId historyId
+	 * @return HistoryNodeEntity
+	 */
+	private List<HistoryNodeEntity> getRunningNode(String flowId, String historyId) {
+		List<HistoryNodeEntity> result = flowAccessor.selectNodeListByStatus(flowId, historyId, NodeStatus.RUNNING);
+		if (result == null) {
+			return new ArrayList<>();
+		}
+		return result;
+	}
+
+	/**
+	 * getOpenningNode
+	 * 
+	 * @param flowId    flowId
+	 * @param historyId historyId
+	 * @return HistoryNodeEntity
+	 */
+	private List<HistoryNodeEntity> getOpenningNode(String flowId, String historyId) {
+		List<HistoryNodeEntity> result = flowAccessor.selectNodeListByStatus(flowId, historyId, NodeStatus.OPENNING);
+		if (result == null) {
+			return new ArrayList<>();
+		}
+		return result;
+	}
+
+	/**
+	 * getWaitingNode
+	 * 
+	 * @param flowId    flowId
+	 * @param historyId historyId
+	 * @return HistoryNodeEntity
+	 */
+	private List<HistoryNodeEntity> getWaitingNode(String flowId, String historyId) {
+		List<HistoryNodeEntity> result = flowAccessor.selectNodeListByStatus(flowId, historyId, NodeStatus.WAIT);
+		if (result == null) {
+			return new ArrayList<>();
+		}
+		return result;
+	}
+
+	/**
+	 * getErrorNode
+	 * 
+	 * @param flowId    flowId
+	 * @param historyId historyId
+	 * @return HistoryNodeEntity
+	 */
+	private List<HistoryNodeEntity> getErrorNode(String flowId, String historyId) {
+		List<HistoryNodeEntity> result = flowAccessor.selectNodeListByStatusDetail(flowId, historyId,
+				NodeStatus.COMPLETE, NodeStatusDetail.COMPLETE_ERROR);
+		if (result == null) {
+			return new ArrayList<>();
+		}
+		return result;
 	}
 
 }

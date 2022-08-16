@@ -14,7 +14,8 @@ package io.github.nobuglady.network.fw.util;
 
 import java.util.List;
 
-import io.github.nobuglady.network.fw.persistance.FlowContainer;
+import io.github.nobuglady.network.fw.component.FlowComponentFactory;
+import io.github.nobuglady.network.fw.component.IFlowAccessor;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryEdgeEntity;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
 import io.github.nobuglady.network.fw.util.model.Convert2JsonEdgeDto;
@@ -27,6 +28,8 @@ import io.github.nobuglady.network.fw.util.model.Convert2JsonNodeDto;
  *
  */
 public class FlowUtil {
+
+	private static IFlowAccessor flowAccessor = FlowComponentFactory.getFlowAccessor();
 
 	/**
 	 * dumpJson
@@ -45,7 +48,7 @@ public class FlowUtil {
 		/*
 		 * node
 		 */
-		List<HistoryNodeEntity> nodeEntityList = FlowContainer.selectNodeByFlowHistoryId(flowId, historyId);
+		List<HistoryNodeEntity> nodeEntityList = flowAccessor.selectNodeByFlowHistoryId(flowId, historyId);
 		for (HistoryNodeEntity item : nodeEntityList) {
 
 			Convert2JsonNodeDto nodeNodeDto = new Convert2JsonNodeDto();
@@ -60,7 +63,7 @@ public class FlowUtil {
 		/*
 		 * edge
 		 */
-		List<HistoryEdgeEntity> edgeEntityList = FlowContainer.selectEdgeByFlowHistoryId(flowId, historyId);
+		List<HistoryEdgeEntity> edgeEntityList = flowAccessor.selectEdgeByFlowHistoryId(flowId, historyId);
 		for (HistoryEdgeEntity item : edgeEntityList) {
 
 			Convert2JsonEdgeDto nodeEdgeDto = new Convert2JsonEdgeDto();
