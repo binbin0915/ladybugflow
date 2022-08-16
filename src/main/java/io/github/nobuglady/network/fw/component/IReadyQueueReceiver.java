@@ -22,7 +22,6 @@ public interface IReadyQueueReceiver {
 	/**
 	 * startConsumerThread
 	 * 
-	 * @param nodeExecuter nodeExecuter
 	 */
 	public void startConsumerThread();
 
