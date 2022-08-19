@@ -136,10 +136,6 @@ public class FlowMarker implements IFlowMarker {
 		}
 		flowAccessor.updateNodeStatusDetailByNodeId(flowId, historyId, nodeId, NodeStatus.COMPLETE, nodeStatusDetail);
 
-		if (NodeStatus.COMPLETE != historyNodeEntity.getNodeStatus()) {
-			return true;
-		}
-
 		flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeId, NodeStatus.GO);
 
 		// mark next
@@ -178,6 +174,7 @@ public class FlowMarker implements IFlowMarker {
 				int edgeStatus = checkCondition(nodeFrom.getNodeStatusDetail(), nodeFrom.getReturnValue(),
 						edge.getEdgeCondition());
 				flowAccessor.updateEdgeStatusByKey(edge.getFlowId(), edge.getHistoryId(), edge.getEdgeId(), edgeStatus);
+				edge.setEdgeStatus(edgeStatus);
 
 				boolean needWait = false;
 				boolean hasError = false;
@@ -207,6 +204,7 @@ public class FlowMarker implements IFlowMarker {
 				if (!needWait) {
 					if (hasError) {
 						flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.INIT);
+						nodeTo.setNodeStatus(NodeStatus.INIT);
 					} else {
 						if (hasOk) {
 
@@ -216,6 +214,7 @@ public class FlowMarker implements IFlowMarker {
 									|| historyNodeEntity.getNodeStatus() == NodeStatus.INIT) {
 								flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
 										NodeStatus.READY);
+								nodeTo.setNodeStatus(NodeStatus.READY);
 							} else {
 								return false;
 							}
@@ -237,6 +236,7 @@ public class FlowMarker implements IFlowMarker {
 									|| historyNodeEntity.getNodeStatus() == NodeStatus.INIT) {
 								flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
 										NodeStatus.READY);
+								nodeTo.setNodeStatus(NodeStatus.READY);
 							} else {
 								return false;
 							}
@@ -244,9 +244,11 @@ public class FlowMarker implements IFlowMarker {
 						} else {
 							flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(),
 									NodeStatus.WAIT);
+							nodeTo.setNodeStatus(NodeStatus.WAIT);
 						}
 					} else {
 						flowAccessor.updateNodeStatusByNodeId(flowId, historyId, nodeTo.getNodeId(), NodeStatus.WAIT);
+						nodeTo.setNodeStatus(NodeStatus.WAIT);
 					}
 
 				}

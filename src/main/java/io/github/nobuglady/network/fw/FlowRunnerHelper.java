@@ -261,7 +261,6 @@ public class FlowRunnerHelper {
 			String json = mapper.writeValueAsString(flowDto);
 			logger.info("json:\n" + json);
 
-			flowAccessor.saveFlow(flowEntityDB);
 			return flowEntityDB;
 
 		} catch (IOException e) {
