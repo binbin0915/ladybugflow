@@ -131,6 +131,10 @@ public class FlowMarker implements IFlowMarker {
 			return false;
 		}
 
+		if (!(NodeStatus.RUNNING == historyNodeEntity.getNodeStatus())) {
+			return false;
+		}
+
 		if (returnValue != null) {
 			flowAccessor.updateNodeReturnValueByNodeId(flowId, historyId, nodeId, returnValue);
 		}

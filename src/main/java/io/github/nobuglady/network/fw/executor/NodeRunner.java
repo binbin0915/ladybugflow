@@ -17,6 +17,7 @@ import java.util.concurrent.CancellationException;
 import io.github.nobuglady.network.fw.FlowRunner;
 import io.github.nobuglady.network.fw.component.FlowComponentFactory;
 import io.github.nobuglady.network.fw.component.IFlowAccessor;
+import io.github.nobuglady.network.fw.constant.NodeExecuteType;
 import io.github.nobuglady.network.fw.constant.NodeStatusDetail;
 import io.github.nobuglady.network.fw.logger.ConsoleLogger;
 import io.github.nobuglady.network.fw.persistance.entity.HistoryNodeEntity;
@@ -71,17 +72,21 @@ public class NodeRunner implements Runnable {
 			}
 			nodeName = historyNodeEntity.getNodeName();
 
-			// run
-			FlowRunner flowRunner = FlowStarter.flowRunnerMap.get(flowId + "," + historyId);
-			consoleLogger.debug(" [NODE RUNNING]" + historyNodeEntity.getNodeName());
-			String returnValue = flowRunner.execute(historyNodeEntity.getFlowId(), historyNodeEntity.getNodeId(),
-					historyNodeEntity.getHistoryId(), historyNodeEntity);
+			if (NodeExecuteType.NODE_EXECUTE_TYPE_WAIT_REQUEST == historyNodeEntity.getExecuteType()) {
+				consoleLogger.debug(" [NODE WAIT_REQUEST]" + historyNodeEntity.getNodeName());
+			} else {
+				// run
+				FlowRunner flowRunner = FlowStarter.flowRunnerMap.get(flowId + "," + historyId);
+				consoleLogger.debug(" [NODE RUNNING]" + historyNodeEntity.getNodeName());
+				String returnValue = flowRunner.execute(historyNodeEntity.getFlowId(), historyNodeEntity.getNodeId(),
+						historyNodeEntity.getHistoryId(), historyNodeEntity);
 
-			// complete
-			consoleLogger.debug(" [NODE COMPLETE][" + returnValue + "]" + historyNodeEntity.getNodeName());
+				// complete
+				consoleLogger.debug(" [NODE COMPLETE][" + returnValue + "]" + historyNodeEntity.getNodeName());
 
-			FlowComponentFactory.getCompleteQueueSender().putCompleteNode(flowId, historyId, nodeId,
-					NodeStatusDetail.COMPLETE_SUCCESS, returnValue);
+				FlowComponentFactory.getCompleteQueueSender().putCompleteNode(flowId, historyId, nodeId,
+						NodeStatusDetail.COMPLETE_SUCCESS, returnValue);
+			}
 
 		} catch (CancellationException e) {
 

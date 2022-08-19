@@ -74,7 +74,7 @@
 	            </tr>
 	            <tr>
 	              <td></td>
-	              <td><label for="node-readyCheck">Start type</label></td>
+	              <td><label for="node-startType">Start type</label></td>
 	              <td>
 	              		<input type="radio" id="node-startType_0" name="node-startType" value="0" checked>Default</input>
 	              		<input type="radio" id="node-startType_3" name="node-startType" value="3"/>Timer</input>
@@ -84,6 +84,14 @@
 	              <td></td>
 	              <td><label for="node-label">Cron</label></td>
 	              <td><input id="node-startCron" type="text" value="0 0/5 * * * ?" /></td>
+	            </tr>
+	            <tr>
+	              <td></td>
+	              <td><label for="node-executeType">Execute type</label></td>
+	              <td>
+	              		<input type="radio" id="node-executeType_0" name="node-executeType" value="0" checked>Default</input>
+	              		<input type="radio" id="node-executeType_2" name="node-executeType" value="2"/>Wait Request</input>
+	              </td>
 	            </tr>
 	            <tr>
 	              <td></td>
@@ -144,6 +152,7 @@
 					"label":element.label,
 					"readyCheck":element.readyCheck,
 					"startType":element.startType,
+					"executeType":element.executeType,
 					"startCron":element.startCron,
 				}
 		));
@@ -175,6 +184,10 @@
 	        id: document.getElementById("node-id").value,
 	        startType: getStartType(),
 	      });
+	      nodes.update({
+		        id: document.getElementById("node-id").value,
+		        executeType: getExecuteType(),
+		      });
 	      nodes.update({
 	        id: document.getElementById("node-id").value,
 	        startCron: document.getElementById("node-startCron").value,
@@ -261,6 +274,11 @@
 				}else{
 					setStartType(node.startType);
 				}
+				if(node.executeType){
+					setExecuteType(node.executeType);
+				}else{
+					setExecuteType(node.executeType);
+				}
 				if(node.startCron){
 					document.getElementById("node-startCron").value = node.startCron;
 				}else{
@@ -322,6 +340,22 @@
 	function getStartType(){
 		if(document.getElementById("node-startType_3").checked){
 			return 3;
+		}else{
+			return 0;
+		}
+	}
+
+	function setExecuteType(executeType){
+		if(executeType == "2"){
+			document.getElementById("node-executeType_2").checked = true;
+		}else{
+			document.getElementById("node-executeType_0").checked = true;
+		}
+	}
+	
+	function getExecuteType(){
+		if(document.getElementById("node-executeType_2").checked){
+			return 2;
 		}else{
 			return 0;
 		}

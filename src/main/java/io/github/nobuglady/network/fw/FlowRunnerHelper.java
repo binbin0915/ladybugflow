@@ -71,8 +71,9 @@ public class FlowRunnerHelper {
 	 * @param flowRunner   flowRunner
 	 * @param jsonFileName jsonFileName
 	 * @param startParam   startParam
+	 * @return historyId
 	 */
-	public static void startFlow(FlowRunner flowRunner, String jsonFileName, String startParam) {
+	public static String startFlow(FlowRunner flowRunner, String jsonFileName, String startParam) {
 
 		String flowPath = flowRunner.getClass().getName();
 
@@ -128,6 +129,8 @@ public class FlowRunnerHelper {
 				}
 			}
 		}
+
+		return historyId;
 
 	}
 
@@ -238,6 +241,7 @@ public class FlowRunnerHelper {
 					nodeEntity.setNodeName(nodeDto.label);
 					nodeEntity.setReadyCheck(nodeDto.readyCheck);
 					nodeEntity.setStartType(nodeDto.startType);
+					nodeEntity.setExecuteType(nodeDto.executeType);
 					nodeEntity.setStartCron(nodeDto.startCron);
 
 					flowEntityDB.nodeEntityList.add(nodeEntity);

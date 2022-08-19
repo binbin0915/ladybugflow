@@ -26,5 +26,6 @@ public class NodeDto {
 	public String label;
 	public int readyCheck;
 	public int startType;
+	public int executeType;
 	public String startCron;
 }

@@ -17,8 +17,8 @@ package io.github.nobuglady.network.fw.constant;
  * @author NoBugLady
  *
  */
-public class NodeStartType {
+public class NodeExecuteType {
 
-	public static final int NODE_START_TYPE_DEFAULT = 1;
-	public static final int NODE_START_TYPE_TIMER = 3;
+	public static final int NODE_EXECUTE_TYPE_DEFAULT = 1;
+	public static final int NODE_EXECUTE_TYPE_WAIT_REQUEST = 2;
 }
